@@ -10,25 +10,29 @@ import AVKit
 
 struct HomeListView: View {
     @State private var isShowingCreatePrompt = false
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \JournalEntry.date, order: .reverse) var videos: [JournalEntry]
 
     var body: some View {
         NavigationStack {
             
             VStack {
-                List(videos) { video in
-                    NavigationLink {
-                        VideoPlayer(player: AVPlayer(url: video.url))
-                            .navigationTitle("Playback")
-                            .navigationBarTitleDisplayMode(.inline)
-                    } label: {
-                        HStack {
-                            Text(video.date.formatted(date: .abbreviated, time: .shortened))
-                            Spacer()
-                            Text(video.url.lastPathComponent)
-                                .foregroundStyle(.gray)
+                List {
+                    ForEach(videos, id: \.self) { video in
+                        NavigationLink {
+                            VideoPlayer(player: AVPlayer(url: video.url))
+                                .navigationTitle("Playback")
+                                .navigationBarTitleDisplayMode(.inline)
+                        } label: {
+                            HStack {
+                                Text(video.date.formatted(date: .abbreviated, time: .shortened))
+                                Spacer()
+                                Text(video.url.lastPathComponent)
+                                    .foregroundStyle(.gray)
+                            }
                         }
                     }
+                    .onDelete(perform: deleteItem)
                 }
                 Spacer()
                 HStack {
@@ -54,5 +58,12 @@ struct HomeListView: View {
             }
         }
         .navigationTitle("All Videos")
+    }
+    
+    private func deleteItem(at offsets: IndexSet) {
+        for index in offsets {
+            let video = videos[index]
+            modelContext.delete(video)
+        }
     }
 }

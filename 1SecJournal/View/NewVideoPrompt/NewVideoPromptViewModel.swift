@@ -24,7 +24,27 @@ import SwiftData
             return
         }
         
-        let newVideo = JournalEntry(url: url)
-        modelContext.insert(newVideo)
+        let fileName = UUID().uuidString + ".mov"
+        
+        // Get the Documents directory
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let destinationURL = documentsDirectory.appendingPathComponent(fileName)
+        
+        do {
+            if FileManager.default.fileExists(atPath: destinationURL.path()) {
+                try FileManager.default.removeItem(at: destinationURL)
+            }
+            
+            try FileManager.default.copyItem(at: url, to: destinationURL)
+            print("Video saved to: \(destinationURL)")
+
+            let newVideo = JournalEntry(url: destinationURL)
+            modelContext.insert(newVideo)
+                
+        } catch {
+            print("Error saving file \(error.localizedDescription)")
+        }
+        
+
     }
 }
