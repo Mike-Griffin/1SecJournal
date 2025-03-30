@@ -15,19 +15,18 @@ struct HomeListView: View {
 
     var body: some View {
         NavigationStack {
-            
             VStack {
                 List {
                     ForEach(videos, id: \.self) { video in
                         NavigationLink {
-                            VideoPlayer(player: AVPlayer(url: video.url))
+                            VideoPlayer(player: AVPlayer(url: video.fileURL))
                                 .navigationTitle("Playback")
                                 .navigationBarTitleDisplayMode(.inline)
                         } label: {
                             HStack {
                                 Text(video.date.formatted(date: .abbreviated, time: .shortened))
                                 Spacer()
-                                Text(video.url.lastPathComponent)
+                                Text(video.fileURL.lastPathComponent)
                                     .foregroundStyle(.gray)
                             }
                         }
@@ -58,6 +57,17 @@ struct HomeListView: View {
             }
         }
         .navigationTitle("All Videos")
+        .onAppear {
+            for video in videos {
+                print(video.fileURL)
+                if FileManager.default.fileExists(atPath: video.fileURL.path()) {
+                    print("yes file exists")
+                } else {
+                    print("no file does not exist")
+
+                }
+            }
+        }
     }
     
     private func deleteItem(at offsets: IndexSet) {

@@ -7,6 +7,8 @@
 import SwiftUI
 import SwiftData
 
+let kAppGroup = "group.com.comedichoney.1SecJournal"
+
 @Observable class NewVideoPromptViewModel {
     var videoURL: URL?
     var showCamera = false
@@ -27,8 +29,11 @@ import SwiftData
         let fileName = UUID().uuidString + ".mov"
         
         // Get the Documents directory
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let destinationURL = documentsDirectory.appendingPathComponent(fileName)
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
+            print("invalid containerURL")
+            return
+        }
+        let destinationURL = containerURL.appendingPathComponent(fileName)
         
         do {
             if FileManager.default.fileExists(atPath: destinationURL.path()) {
@@ -38,7 +43,7 @@ import SwiftData
             try FileManager.default.copyItem(at: url, to: destinationURL)
             print("Video saved to: \(destinationURL)")
 
-            let newVideo = JournalEntry(url: destinationURL)
+            let newVideo = JournalEntry(filename: fileName)
             modelContext.insert(newVideo)
                 
         } catch {
