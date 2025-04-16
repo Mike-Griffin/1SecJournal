@@ -19,13 +19,16 @@ struct HomeListView: View {
                 List {
                     ForEach(videos, id: \.self) { video in
                         NavigationLink {
-                            VideoPlayer(player: AVPlayer(url: video.fileURL))
-                                .navigationTitle("Playback")
-                                .navigationBarTitleDisplayMode(.inline)
+                            VideoPlayerWrapperView(video: video)
                         } label: {
-                            HStack {
-                                Text(video.date.formatted(date: .abbreviated, time: .shortened))
-                                Spacer()
+                            VStack {
+                                if(video.thumbnailImage != nil) {
+                                    Image(uiImage: video.thumbnailImage!)
+                                        .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                }
+                                Text(video.date.videoFormattedDisplay)
+                                Divider()
                                 Text(video.fileURL.lastPathComponent)
                                     .foregroundStyle(.gray)
                             }

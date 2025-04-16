@@ -62,11 +62,13 @@ struct NewVideoPromptView: View {
             }
             Spacer()
         }
-        .sheet(isPresented: $viewModel.showCamera) {
-            VideoPicker(sourceType: .camera, videoURL: $viewModel.videoURL)
+        .fullScreenCover(isPresented: $viewModel.showCamera) {
+            VideoRecorderView(videoURL: $viewModel.videoURL)
+//            VideoPickerView(sourceType: .camera, videoURL: $viewModel.videoURL)
         }
         .sheet(isPresented: $viewModel.showPhotoLibrary) {
-            VideoPicker(sourceType: .photoLibrary, videoURL: $viewModel.videoURL)
+            // TODO: Can remove the photoLibrary type
+            VideoPickerView(sourceType: .photoLibrary, videoURL: $viewModel.videoURL)
         }
         .onAppear {
             if viewModel.modelContext !== modelContext {
@@ -100,46 +102,7 @@ struct VideoPickerSelectionButtons: View {
     }
 }
 
-struct VideoPicker: UIViewControllerRepresentable {
-    var sourceType: UIImagePickerController.SourceType
-    @Binding var videoURL: URL?
 
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = sourceType
-        picker.mediaTypes = ["public.movie"] // Allow videos only
-        picker.videoQuality = .typeHigh
-        picker.delegate = context.coordinator
-        picker.allowsEditing = true
-        picker.videoMaximumDuration = 10 // TODO: This is a bad UI. This just throws up an error when someone crosses the line
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let parent: VideoPicker
-
-        init(_ parent: VideoPicker) {
-            self.parent = parent
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let videoURL = info[.mediaURL] as? URL {
-                parent.videoURL = videoURL
-            }
-            picker.dismiss(animated: true)
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-        }
-    }
-}
 
 
 //#Preview {
