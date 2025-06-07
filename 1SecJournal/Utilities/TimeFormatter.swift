@@ -17,7 +17,7 @@ extension Date {
         let isThisYear = calendar.component(.year, from: self) == calendar.component(.year, from: Date())
         let formatter = DateFormatter()
         formatter.locale = .current
-        formatter.dateFormat = isThisYear ? "MMM d" : "MMM d, yyyy"
+        formatter.dateFormat = isThisYear ? "MMMM d" : "MMMM d, yyyy"
 
         return formatter.string(from: self)
         

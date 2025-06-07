@@ -7,7 +7,7 @@
 import SwiftData
 import UIKit
 
-@Model class JournalEntry {
+@Model class VideoEntry {
     var id: UUID
     var filename: String
     var thumbnailFilename: String
@@ -21,7 +21,7 @@ import UIKit
     }
 }
 
-extension JournalEntry {
+extension VideoEntry {
     var fileURL: URL {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
             print("invalid containerURL")

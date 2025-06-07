@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 struct VideoPlayerWrapperView: View {
-    let video: JournalEntry
+    let video: VideoEntry
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             let player = AVPlayer(url: video.fileURL)

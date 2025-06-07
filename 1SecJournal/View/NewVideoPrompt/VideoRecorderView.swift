@@ -32,8 +32,9 @@ struct VideoRecorderView: UIViewControllerRepresentable {
         }
 
         func didFinishRecording(to url: URL) {
-            parent.videoURL = url
-            
+            withAnimation {
+                parent.videoURL = url
+            }
         }
     }
 }

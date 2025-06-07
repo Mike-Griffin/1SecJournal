@@ -17,18 +17,21 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     var videoOutput = AVCaptureMovieFileOutput()
     weak var delegate: CustomCameraViewControllerDelegate?
     var previewLayer: AVCaptureVideoPreviewLayer!
-    var maxDuration: TimeInterval = 10
+    var maxDuration: TimeInterval = 1
     var url: URL?
-    var recordToggleButton: UIButton?
 
     let previewContainer = UIView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCamera()
+        setupCameraSession()
     }
-
-    func setupCamera() {
+    
+    override func viewDidLayoutSubviews() {
+         layoutOverlay()
+    }
+    
+    func setupCameraSession() {
         captureSession.beginConfiguration()
          captureSession.sessionPreset = .high
 
@@ -40,38 +43,47 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
              return
          }
          captureSession.addInput(input)
+        
+        if let audioDevice = AVCaptureDevice.default(for: .audio),
+           let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
+           captureSession.canAddInput(audioInput) {
+            captureSession.addInput(audioInput)
+        }
 
          // Add output (after input!)
          if captureSession.canAddOutput(videoOutput) {
              captureSession.addOutput(videoOutput)
-             videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, preferredTimescale: 30)
+             videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(1, preferredTimescale: 600)
+             videoOutput.minFreeDiskSpaceLimit = 1024 * 1024
          } else {
              print("❌ Cannot add video output")
          }
-
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.videoGravity = .resizeAspectFill
-        previewLayer.frame = view.bounds
-        view.layer.addSublayer(previewLayer)
-
+        
         captureSession.commitConfiguration()
         DispatchQueue.global().async { [weak self] in
             self?.captureSession.startRunning()
         }
-
-        // Add record button
-        let recordButton = UIButton(type: .system)
-        recordButton.setTitle("Record", for: .normal)
-        recordButton.setTitleColor(.white, for: .normal)
-        recordButton.backgroundColor = .red
-        recordButton.layer.cornerRadius = 30
-        recordButton.frame = CGRect(x: (view.bounds.width - 60)/2, y: view.bounds.height - 200, width: 60, height: 60)
-        recordButton.addTarget(self, action: #selector(startRecording), for: .touchUpInside)
-        view.addSubview(recordButton)
-        recordToggleButton = recordButton
     }
 
-    @objc func startRecording() {
+    func layoutOverlay() {
+        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.frame = view.frame
+        view.layer.addSublayer(previewLayer)
+
+
+        let overlayView = CameraRecorderOverlayView { [weak self] in
+            self?.handleRecordButtonTap()
+        }
+        let hostingController = UIHostingController(rootView: overlayView)
+        addChild(hostingController)
+        hostingController.view.frame = view.bounds
+        hostingController.view.backgroundColor = .clear
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+    }
+
+    @objc func handleRecordButtonTap() {
         print("Inputs: \(captureSession.inputs)")
         print("Outputs: \(captureSession.outputs)")
         if let connection = videoOutput.connection(with: .video) {
@@ -84,20 +96,22 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
             return
         }
         guard !videoOutput.isRecording else {
-            videoOutput.stopRecording()
-            guard let url = url else {
-                return
-            }
-            delegate?.didFinishRecording(to: url)
+            stopRecording()
             return
         }
-        
-        recordToggleButton?.setTitle("Stop", for: .normal)
-
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("output.mov")
         try? FileManager.default.removeItem(at: tempURL)
         videoOutput.startRecording(to: tempURL, recordingDelegate: self)
         url = tempURL
+    }
+    
+    private func stopRecording() {
+        videoOutput.stopRecording()
+        guard let url = url else {
+            return
+        }
+        delegate?.didFinishRecording(to: url)
+        return
     }
 
     func fileOutput(_ output: AVCaptureFileOutput,

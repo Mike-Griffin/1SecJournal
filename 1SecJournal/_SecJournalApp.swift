@@ -13,7 +13,7 @@ struct _SecJournalApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: JournalEntry.self)
+        .modelContainer(for: VideoEntry.self)
 
     }
 }
