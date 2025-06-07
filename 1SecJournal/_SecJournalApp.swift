@@ -14,6 +14,7 @@ struct _SecJournalApp: App {
             ContentView()
         }
         .modelContainer(for: VideoEntry.self)
+        
 
     }
 }
