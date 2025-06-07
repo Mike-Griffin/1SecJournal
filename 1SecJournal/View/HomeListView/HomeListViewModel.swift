@@ -56,6 +56,7 @@ struct ShareItem: Identifiable, CustomStringConvertible {
     var description: String { "" } // prevents UUID or file path from flashing on sheet
 }
 
+@MainActor
 @Observable class HomeListViewModel {
     // Video Display
     var videos: [VideoEntry] = []
@@ -130,15 +131,20 @@ struct ShareItem: Identifiable, CustomStringConvertible {
     }
 
     
-    private func getThumbnail(from videoURL: URL) -> UIImage? {
+    private func getThumbnail(from videoURL: URL) async -> UIImage? {
             let asset = AVURLAsset(url: videoURL)
             let imageGenerator = AVAssetImageGenerator(asset: asset)
             imageGenerator.appliesPreferredTrackTransform = true
 
             let time = CMTime(seconds: 1, preferredTimescale: 600) // 1 second into video
             do {
-                let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
-                return UIImage(cgImage: cgImage)
+                // It's possible I'm not throwing the error properly, but I think it should be
+                return try await withCheckedThrowingContinuation { continuation in
+                    imageGenerator.generateCGImageAsynchronously(for: time) { cgImage,_,_  in         if let cgImage = cgImage {
+                            continuation.resume(returning: UIImage(cgImage: cgImage))
+                        }
+                    }
+                }
             } catch {
                 print("❌ Failed to generate thumbnail: \(error)")
                 return nil
@@ -168,7 +174,7 @@ struct ShareItem: Identifiable, CustomStringConvertible {
         modelContext.delete(video)
     }
     
-    func saveVideo(url: URL) {
+    func saveVideo(url: URL) async {
         
         let uuidString = UUID().uuidString
         
@@ -189,7 +195,7 @@ struct ShareItem: Identifiable, CustomStringConvertible {
             try FileManager.default.copyItem(at: url, to: destinationURL)
             print("Video saved to: \(destinationURL)")
             var thumbnailFileName = ""
-            if let thumbnailImage = getThumbnail(from: destinationURL) {
+            if let thumbnailImage = await getThumbnail(from: destinationURL) {
                 thumbnailFileName = uuidString + "thumb.jpg"
                 let thumbDestinationURL = containerURL.appendingPathComponent(thumbnailFileName)
                 if FileManager.default.fileExists(atPath: thumbDestinationURL.path()) {
@@ -233,7 +239,9 @@ struct ShareItem: Identifiable, CustomStringConvertible {
         return NewVideoPromptViewModel{ [weak self] in
             self?.createPromptType = nil
         } onSave: { [weak self] url in
-            self?.saveVideo(url: url)
+            Task {
+               await self?.saveVideo(url: url)
+            }
         }
         
     }
