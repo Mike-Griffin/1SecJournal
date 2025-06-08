@@ -49,7 +49,7 @@ enum CreatePromptType: Identifiable {
     }
 }
 
-struct ShareItem: Identifiable, CustomStringConvertible {
+struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     let id = UUID()
     let url: URL
 
@@ -63,11 +63,14 @@ struct ShareItem: Identifiable, CustomStringConvertible {
     var sectionedVideos: [(section: VideoSection, videos: [VideoEntry])] = []
     
     // Share Sheet
-    var selectedShareURL: ShareItem?
+    var selectedShareURL: SelectedIdentifiableURL?
     
     // Prompt Management
     var createPromptType: CreatePromptType?
     var uploadTodayVideoCTATapped: Bool = false
+    
+    // Create a stitch of videos
+    var stichVideoUrl: SelectedIdentifiableURL?
     
     var modelContext: ModelContext
     
@@ -164,7 +167,7 @@ struct ShareItem: Identifiable, CustomStringConvertible {
                 try FileManager.default.removeItem(at: targetURL)
             }
             try FileManager.default.copyItem(at: video.fileURL, to: targetURL)
-            selectedShareURL = ShareItem(url: targetURL)
+            selectedShareURL = SelectedIdentifiableURL(url: targetURL)
         } catch {
             print("❌ Failed to copy file for sharing:", error)
          }
@@ -222,6 +225,81 @@ struct ShareItem: Identifiable, CustomStringConvertible {
 
     }
     
+    // MARK: Combine Stitch Videos to create a new one
+    func combineVideos(_ videos: [VideoEntry]) async {
+        let mixComposition = AVMutableComposition()
+        guard let videoTrack = mixComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
+            print("Error creating video track")
+            return
+        }
+        
+        
+        var runningDuration: CMTime = .zero
+        var instructions: [AVMutableVideoCompositionInstruction] = []
+            for video in videos {
+                let videoURL = video.fileURL
+                let asset = AVURLAsset(url: videoURL)
+                do {
+                    guard let track = try await asset.loadTracks(withMediaType: .video).first else {
+                        print("no video track found")
+                        continue
+                    }
+                    let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
+                    try videoTrack.insertTimeRange(timeRange, of: track, at: runningDuration)
+                    
+                    let instruction = AVMutableVideoCompositionInstruction()
+                    instruction.timeRange = CMTimeRange(start: runningDuration, duration: asset.duration)
+
+                    let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
+                    layerInstruction.setTransform(track.preferredTransform, at: runningDuration)
+
+                    instruction.layerInstructions = [layerInstruction]
+                    instructions.append(instruction)
+                    
+                    runningDuration = CMTimeAdd(runningDuration, asset.duration)
+                } catch {
+                    print(error.localizedDescription)
+                    continue
+                }
+            }
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.instructions = instructions
+        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+
+        // Use the render size from the first track (or max size if clips vary)
+        let firstTrack = try await AVURLAsset(url: videos.first!.fileURL)
+        let naturalSize = firstTrack.tracks(withMediaType: .video).first!.naturalSize
+        let transform = firstTrack.tracks(withMediaType: .video).first!.preferredTransform
+        videoComposition.renderSize = CGSize(
+            width: abs(naturalSize.applying(transform).width),
+            height: abs(naturalSize.applying(transform).height)
+        )
+            
+            // MARK: Export
+            let outputURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
+            
+            guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: AVAssetExportPresetHighestQuality) else {
+                print("Failed to create export session")
+                return
+            }
+            
+            exportSession.outputURL = outputURL
+            exportSession.outputFileType = .mov
+            exportSession.videoComposition = videoComposition
+            
+            exportSession.exportAsynchronously { [weak self] in
+                DispatchQueue.main.async {
+                    switch exportSession.status {
+                    case .completed:
+                        self?.stichVideoUrl = SelectedIdentifiableURL(url: outputURL)
+                    default:
+                        print("Export failed: \(exportSession.error?.localizedDescription ?? "Unknown error")")
+                    }
+                }
+            }
+    }
+
+    
     // Prompt Management
     func shouldShowTodayPrompt() -> Bool {
         if uploadTodayVideoCTATapped {
@@ -240,6 +318,12 @@ struct ShareItem: Identifiable, CustomStringConvertible {
         } onSave: { [weak self] url in
             Task {
                await self?.saveVideo(url: url)
+            }
+        } onSelectedStitchVideos: { [weak self] selectedStitchVideos in
+            // create a new video that combines the videos
+            // set this url into a new value
+            Task {
+                await  self?.combineVideos(selectedStitchVideos)
             }
         }
         

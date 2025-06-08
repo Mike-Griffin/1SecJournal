@@ -22,15 +22,16 @@ class CreateStitchViewModel {
     var videos: [VideoEntry]
     var selectedIds: Set<UUID> = []
     
-    var onDismiss: (() -> Void)
+    var onSelectStitchVideos: (([VideoEntry]) -> Void)
     
-    init(videos: [VideoEntry], onDismiss: @escaping () -> Void) {
+    init(videos: [VideoEntry], onSelectStitchVideos: @escaping ([VideoEntry]) -> Void) {
         self.videos = videos
-        self.onDismiss = onDismiss
+        self.onSelectStitchVideos = onSelectStitchVideos
     }
     
     func createStitch() {
         // I guess I should show a view here that shows the video that was stitched before letting a user save
-        onDismiss()
+        let selectedVideos = videos.filter({ selectedIds.contains($0.id) })
+        onSelectStitchVideos(selectedVideos)
     }
 }

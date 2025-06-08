@@ -127,12 +127,9 @@
 		7FAEDB052DF535FB00011D8C /* NewVideoPrompt */ = {
 			isa = PBXGroup;
 			children = (
+				7FAEDB2C2DF64B7F00011D8C /* NewVideoPromptView */,
 				7FAEDAFD2DF535FB00011D8C /* CameraRecorderView */,
 				7FAEDB002DF535FB00011D8C /* CreateStitchView */,
-				7FAEDB022DF535FB00011D8C /* NewVideoPromptViewModel.swift */,
-				7FAEDB012DF535FB00011D8C /* NewVideoPromptView.swift */,
-				7FAEDB032DF535FB00011D8C /* VideoPickerView.swift */,
-				7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */,
 			);
 			path = NewVideoPrompt;
 			sourceTree = "<group>";
@@ -180,6 +177,17 @@
 				7FAEDB112DF535FB00011D8C /* ContentView.swift */,
 			);
 			path = 1SecJournal;
+			sourceTree = "<group>";
+		};
+		7FAEDB2C2DF64B7F00011D8C /* NewVideoPromptView */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDB022DF535FB00011D8C /* NewVideoPromptViewModel.swift */,
+				7FAEDB012DF535FB00011D8C /* NewVideoPromptView.swift */,
+				7FAEDB032DF535FB00011D8C /* VideoPickerView.swift */,
+				7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */,
+			);
+			path = NewVideoPromptView;
 			sourceTree = "<group>";
 		};
 		7FB6684B2D879FF800BD72D9 = {

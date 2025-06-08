@@ -30,8 +30,8 @@
             filePath = "1SecJournal/View/HomeListView/HomeListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "VideoRowCell"
             landmarkType = "14">
          </BreakpointContent>

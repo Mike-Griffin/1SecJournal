@@ -78,6 +78,9 @@ struct HomeListView: View {
             .sheet(item: $viewModel.selectedShareURL) { video in
                 ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
             }
+            .sheet(item: $viewModel.stichVideoUrl) { videoUrl in
+                VideoPlayer(player: AVPlayer(url: videoUrl.url))
+            }
             .navigationTitle("All Videos")
             
         }

@@ -114,5 +114,5 @@ struct CustomStitchSelectionView: View {
 }
 
 #Preview {
-    CreateStitchView(viewModel: CreateStitchViewModel(videos: []) {})
+    CreateStitchView(viewModel: CreateStitchViewModel(videos: []) {_ in })
 }

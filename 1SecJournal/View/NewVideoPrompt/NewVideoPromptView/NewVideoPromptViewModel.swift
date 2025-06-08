@@ -20,14 +20,17 @@ import AVFoundation
     
     var onSave: (URL) -> Void
     var onDismiss: (() -> Void)
+    var onSelectedStitchVideos: ([VideoEntry]) -> Void
     
     init(videos: [VideoEntry],
         onDismiss: @escaping () -> Void,
          onSave: @escaping (URL) -> Void,
+         onSelectedStitchVideos: @escaping ([VideoEntry]) -> Void
     ) {
         self.onDismiss = onDismiss
         self.onSave = onSave
         self.videos = videos
+        self.onSelectedStitchVideos = onSelectedStitchVideos
     }
     
     var videoURL: URL? {
@@ -54,8 +57,9 @@ import AVFoundation
     }
     
     func createStitchViewModel() -> CreateStitchViewModel {
-        CreateStitchViewModel(videos: videos) { [weak self] in
+        CreateStitchViewModel(videos: videos) { [weak self] selectedStitchVideos in
             self?.onDismiss()
+            self?.onSelectedStitchVideos(selectedStitchVideos)
         }
     }
 }
