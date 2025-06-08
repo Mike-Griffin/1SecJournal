@@ -25,8 +25,10 @@ struct CreateStitchView: View {
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
                 
-                CreateStitchPickerView(viewModel: viewModel)
-                
+                ScrollView {
+                    CreateStitchPickerView(viewModel: viewModel)
+                }
+
                 Spacer()
             }
             VStack {
