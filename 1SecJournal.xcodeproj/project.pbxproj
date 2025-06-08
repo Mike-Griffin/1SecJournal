@@ -6,17 +6,59 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */; };
+		7FAEDB142DF535FB00011D8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDB102DF535FB00011D8C /* Assets.xcassets */; };
+		7FAEDB152DF535FB00011D8C /* VideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */; };
+		7FAEDB162DF535FB00011D8C /* TimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */; };
+		7FAEDB172DF535FB00011D8C /* HomeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF62DF535FB00011D8C /* HomeListView.swift */; };
+		7FAEDB182DF535FB00011D8C /* HomeListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF72DF535FB00011D8C /* HomeListViewModel.swift */; };
+		7FAEDB192DF535FB00011D8C /* VideoPlayerWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF82DF535FB00011D8C /* VideoPlayerWrapperView.swift */; };
+		7FAEDB1A2DF535FB00011D8C /* CameraRecorderOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFA2DF535FB00011D8C /* CameraRecorderOverlayView.swift */; };
+		7FAEDB1B2DF535FB00011D8C /* CameraRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFB2DF535FB00011D8C /* CameraRecorderViewController.swift */; };
+		7FAEDB1C2DF535FB00011D8C /* RecordVideoButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFC2DF535FB00011D8C /* RecordVideoButtonView.swift */; };
+		7FAEDB1D2DF535FB00011D8C /* CreateStitchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFE2DF535FB00011D8C /* CreateStitchView.swift */; };
+		7FAEDB1E2DF535FB00011D8C /* CreateStitchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFF2DF535FB00011D8C /* CreateStitchViewModel.swift */; };
+		7FAEDB1F2DF535FB00011D8C /* NewVideoPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB012DF535FB00011D8C /* NewVideoPromptView.swift */; };
+		7FAEDB202DF535FB00011D8C /* NewVideoPromptViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB022DF535FB00011D8C /* NewVideoPromptViewModel.swift */; };
+		7FAEDB212DF535FB00011D8C /* VideoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB032DF535FB00011D8C /* VideoPickerView.swift */; };
+		7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */; };
+		7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */; };
+		7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB072DF535FB00011D8C /* PillButtonView.swift */; };
+		7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */; };
+		7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */; };
+		7FAEDB272DF535FB00011D8C /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */; };
+		7FAEDB282DF535FB00011D8C /* _SecJournalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB0E2DF535FB00011D8C /* _SecJournalApp.swift */; };
+		7FAEDB292DF535FB00011D8C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB112DF535FB00011D8C /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEntry.swift; sourceTree = "<group>"; };
+		7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
+		7FAEDAF62DF535FB00011D8C /* HomeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeListView.swift; sourceTree = "<group>"; };
+		7FAEDAF72DF535FB00011D8C /* HomeListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeListViewModel.swift; sourceTree = "<group>"; };
+		7FAEDAF82DF535FB00011D8C /* VideoPlayerWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerWrapperView.swift; sourceTree = "<group>"; };
+		7FAEDAFA2DF535FB00011D8C /* CameraRecorderOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecorderOverlayView.swift; sourceTree = "<group>"; };
+		7FAEDAFB2DF535FB00011D8C /* CameraRecorderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecorderViewController.swift; sourceTree = "<group>"; };
+		7FAEDAFC2DF535FB00011D8C /* RecordVideoButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVideoButtonView.swift; sourceTree = "<group>"; };
+		7FAEDAFE2DF535FB00011D8C /* CreateStitchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStitchView.swift; sourceTree = "<group>"; };
+		7FAEDAFF2DF535FB00011D8C /* CreateStitchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStitchViewModel.swift; sourceTree = "<group>"; };
+		7FAEDB012DF535FB00011D8C /* NewVideoPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVideoPromptView.swift; sourceTree = "<group>"; };
+		7FAEDB022DF535FB00011D8C /* NewVideoPromptViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewVideoPromptViewModel.swift; sourceTree = "<group>"; };
+		7FAEDB032DF535FB00011D8C /* VideoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPickerView.swift; sourceTree = "<group>"; };
+		7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderView.swift; sourceTree = "<group>"; };
+		7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscardButtonView.swift; sourceTree = "<group>"; };
+		7FAEDB072DF535FB00011D8C /* PillButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillButtonView.swift; sourceTree = "<group>"; };
+		7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveButtonView.swift; sourceTree = "<group>"; };
+		7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapToRecordView.swift; sourceTree = "<group>"; };
+		7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		7FAEDB0E2DF535FB00011D8C /* _SecJournalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _SecJournalApp.swift; sourceTree = "<group>"; };
+		7FAEDB0F2DF535FB00011D8C /* 1SecJournal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = 1SecJournal.entitlements; sourceTree = "<group>"; };
+		7FAEDB102DF535FB00011D8C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7FAEDB112DF535FB00011D8C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7FB668542D879FF800BD72D9 /* 1SecJournal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 1SecJournal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		7FB668562D879FF800BD72D9 /* 1SecJournal */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = 1SecJournal;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		7FB668512D879FF800BD72D9 /* Frameworks */ = {
@@ -29,10 +71,121 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7FAEDAF12DF535FB00011D8C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		7FAEDAF32DF535FB00011D8C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		7FAEDAF52DF535FB00011D8C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		7FAEDAF92DF535FB00011D8C /* HomeListView */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAF72DF535FB00011D8C /* HomeListViewModel.swift */,
+				7FAEDAF62DF535FB00011D8C /* HomeListView.swift */,
+				7FAEDAF82DF535FB00011D8C /* VideoPlayerWrapperView.swift */,
+			);
+			path = HomeListView;
+			sourceTree = "<group>";
+		};
+		7FAEDAFD2DF535FB00011D8C /* CameraRecorderView */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAFB2DF535FB00011D8C /* CameraRecorderViewController.swift */,
+				7FAEDAFA2DF535FB00011D8C /* CameraRecorderOverlayView.swift */,
+				7FAEDAFC2DF535FB00011D8C /* RecordVideoButtonView.swift */,
+			);
+			path = CameraRecorderView;
+			sourceTree = "<group>";
+		};
+		7FAEDB002DF535FB00011D8C /* CreateStitchView */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAFF2DF535FB00011D8C /* CreateStitchViewModel.swift */,
+				7FAEDAFE2DF535FB00011D8C /* CreateStitchView.swift */,
+			);
+			path = CreateStitchView;
+			sourceTree = "<group>";
+		};
+		7FAEDB052DF535FB00011D8C /* NewVideoPrompt */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAFD2DF535FB00011D8C /* CameraRecorderView */,
+				7FAEDB002DF535FB00011D8C /* CreateStitchView */,
+				7FAEDB022DF535FB00011D8C /* NewVideoPromptViewModel.swift */,
+				7FAEDB012DF535FB00011D8C /* NewVideoPromptView.swift */,
+				7FAEDB032DF535FB00011D8C /* VideoPickerView.swift */,
+				7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */,
+			);
+			path = NewVideoPrompt;
+			sourceTree = "<group>";
+		};
+		7FAEDB0A2DF535FB00011D8C /* SharedViews */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */,
+				7FAEDB072DF535FB00011D8C /* PillButtonView.swift */,
+				7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */,
+				7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */,
+			);
+			path = SharedViews;
+			sourceTree = "<group>";
+		};
+		7FAEDB0C2DF535FB00011D8C /* ShareSheet */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */,
+			);
+			path = ShareSheet;
+			sourceTree = "<group>";
+		};
+		7FAEDB0D2DF535FB00011D8C /* View */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAF92DF535FB00011D8C /* HomeListView */,
+				7FAEDB052DF535FB00011D8C /* NewVideoPrompt */,
+				7FAEDB0A2DF535FB00011D8C /* SharedViews */,
+				7FAEDB0C2DF535FB00011D8C /* ShareSheet */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		7FAEDB122DF535FB00011D8C /* 1SecJournal */ = {
+			isa = PBXGroup;
+			children = (
+				7FAEDAF12DF535FB00011D8C /* Model */,
+				7FAEDAF32DF535FB00011D8C /* Preview Content */,
+				7FAEDAF52DF535FB00011D8C /* Utilities */,
+				7FAEDB0D2DF535FB00011D8C /* View */,
+				7FAEDB0E2DF535FB00011D8C /* _SecJournalApp.swift */,
+				7FAEDB0F2DF535FB00011D8C /* 1SecJournal.entitlements */,
+				7FAEDB102DF535FB00011D8C /* Assets.xcassets */,
+				7FAEDB112DF535FB00011D8C /* ContentView.swift */,
+			);
+			path = 1SecJournal;
+			sourceTree = "<group>";
+		};
 		7FB6684B2D879FF800BD72D9 = {
 			isa = PBXGroup;
 			children = (
-				7FB668562D879FF800BD72D9 /* 1SecJournal */,
+				7FAEDB122DF535FB00011D8C /* 1SecJournal */,
 				7FB668552D879FF800BD72D9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +212,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				7FB668562D879FF800BD72D9 /* 1SecJournal */,
 			);
 			name = 1SecJournal;
 			packageProductDependencies = (
@@ -109,6 +259,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */,
+				7FAEDB142DF535FB00011D8C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +271,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FAEDB152DF535FB00011D8C /* VideoEntry.swift in Sources */,
+				7FAEDB162DF535FB00011D8C /* TimeFormatter.swift in Sources */,
+				7FAEDB172DF535FB00011D8C /* HomeListView.swift in Sources */,
+				7FAEDB182DF535FB00011D8C /* HomeListViewModel.swift in Sources */,
+				7FAEDB192DF535FB00011D8C /* VideoPlayerWrapperView.swift in Sources */,
+				7FAEDB1A2DF535FB00011D8C /* CameraRecorderOverlayView.swift in Sources */,
+				7FAEDB1B2DF535FB00011D8C /* CameraRecorderViewController.swift in Sources */,
+				7FAEDB1C2DF535FB00011D8C /* RecordVideoButtonView.swift in Sources */,
+				7FAEDB1D2DF535FB00011D8C /* CreateStitchView.swift in Sources */,
+				7FAEDB1E2DF535FB00011D8C /* CreateStitchViewModel.swift in Sources */,
+				7FAEDB1F2DF535FB00011D8C /* NewVideoPromptView.swift in Sources */,
+				7FAEDB202DF535FB00011D8C /* NewVideoPromptViewModel.swift in Sources */,
+				7FAEDB212DF535FB00011D8C /* VideoPickerView.swift in Sources */,
+				7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */,
+				7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */,
+				7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */,
+				7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */,
+				7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */,
+				7FAEDB272DF535FB00011D8C /* ShareSheet.swift in Sources */,
+				7FAEDB282DF535FB00011D8C /* _SecJournalApp.swift in Sources */,
+				7FAEDB292DF535FB00011D8C /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

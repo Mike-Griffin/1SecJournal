@@ -40,6 +40,9 @@ struct NewVideoPromptView: View {
             // TODO: Can remove the photoLibrary type
             VideoPickerView(sourceType: .photoLibrary, videoURL: $viewModel.videoURL)
         }
+        .sheet(isPresented: $viewModel.showCreateStitch) {
+            CreateStitchView(viewModel: viewModel.createStitchViewModel())
+        }
     }
 
 }
@@ -125,7 +128,7 @@ struct VideoInformationView: View {
                         }
                     if showStitch {
                         Button {
-                            print("create stitch")
+                            viewModel.showCreateStitch = true
                         } label: {
                             ZStack {
                                 Text("Create Stitch")

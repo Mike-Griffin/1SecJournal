@@ -222,7 +222,6 @@ struct ShareItem: Identifiable, CustomStringConvertible {
 
     }
     
-    
     // Prompt Management
     func shouldShowTodayPrompt() -> Bool {
         if uploadTodayVideoCTATapped {
@@ -236,7 +235,7 @@ struct ShareItem: Identifiable, CustomStringConvertible {
 
     
     func makeMakePromptViewModel() -> NewVideoPromptViewModel {
-        return NewVideoPromptViewModel{ [weak self] in
+        return NewVideoPromptViewModel(videos: videos){ [weak self] in
             self?.createPromptType = nil
         } onSave: { [weak self] url in
             Task {

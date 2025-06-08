@@ -9,12 +9,9 @@ import SwiftData
 import AVKit
 
 struct HomeListView: View {
-//    @State private var isShowingCreatePrompt = false
     @Bindable var viewModel: HomeListViewModel
     @State private var tappedVideo: VideoEntry? = nil
-    
-//    @State private var isShareSheetPresented = false
-    
+        
     @Environment(\.scenePhase) private var scenePhase
     
     init(viewModel: HomeListViewModel) {

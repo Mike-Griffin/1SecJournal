@@ -11,17 +11,23 @@ import AVFoundation
 //let kAppGroup = "group.com.comedichoney.1SecJournal"
 
 @Observable class NewVideoPromptViewModel {
-//    var videoURL: URL?
     var showCamera = false
     var showPhotoLibrary = false
+    var showCreateStitch = false
+    
+    // All videos are passed down to the CreateStitchViewModel
+    var videos: [VideoEntry]
     
     var onSave: (URL) -> Void
     var onDismiss: (() -> Void)
     
-    init(onDismiss: @escaping () -> Void,
-         onSave: @escaping (URL) -> Void) {
+    init(videos: [VideoEntry],
+        onDismiss: @escaping () -> Void,
+         onSave: @escaping (URL) -> Void,
+    ) {
         self.onDismiss = onDismiss
         self.onSave = onSave
+        self.videos = videos
     }
     
     var videoURL: URL? {
@@ -45,5 +51,11 @@ import AVFoundation
     
     func dismissPrompt() {
         onDismiss()
+    }
+    
+    func createStitchViewModel() -> CreateStitchViewModel {
+        CreateStitchViewModel(videos: videos) { [weak self] in
+            self?.onDismiss()
+        }
     }
 }
