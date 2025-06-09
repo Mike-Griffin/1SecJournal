@@ -244,19 +244,20 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
                         print("no video track found")
                         continue
                     }
-                    let timeRange = CMTimeRange(start: .zero, duration: asset.duration)
+                    let duration = try await asset.load(.duration)
+                    let timeRange = CMTimeRange(start: .zero, duration: duration)
                     try videoTrack.insertTimeRange(timeRange, of: track, at: runningDuration)
                     
                     let instruction = AVMutableVideoCompositionInstruction()
-                    instruction.timeRange = CMTimeRange(start: runningDuration, duration: asset.duration)
+                    instruction.timeRange = CMTimeRange(start: runningDuration, duration: duration)
 
                     let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-                    layerInstruction.setTransform(track.preferredTransform, at: runningDuration)
+                    layerInstruction.setTransform(try await track.load(.preferredTransform), at: runningDuration)
 
                     instruction.layerInstructions = [layerInstruction]
                     instructions.append(instruction)
                     
-                    runningDuration = CMTimeAdd(runningDuration, asset.duration)
+                    runningDuration = CMTimeAdd(runningDuration, duration)
                 } catch {
                     print(error.localizedDescription)
                     continue
@@ -267,13 +268,22 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
 
         // Use the render size from the first track (or max size if clips vary)
-        let firstTrack = try await AVURLAsset(url: videos.first!.fileURL)
-        let naturalSize = firstTrack.tracks(withMediaType: .video).first!.naturalSize
-        let transform = firstTrack.tracks(withMediaType: .video).first!.preferredTransform
-        videoComposition.renderSize = CGSize(
-            width: abs(naturalSize.applying(transform).width),
-            height: abs(naturalSize.applying(transform).height)
-        )
+        let firstTrack = AVURLAsset(url: videos.first!.fileURL)
+        do {
+            guard let firstVideoTrack = try await firstTrack.loadTracks(withMediaType: .video).first else {
+                print("no video track")
+                return
+            }
+            let naturalSize = try await firstVideoTrack.load(.naturalSize)
+            let transform = try await firstVideoTrack.load(.preferredTransform)
+            videoComposition.renderSize = CGSize(
+                width: abs(naturalSize.applying(transform).width),
+                height: abs(naturalSize.applying(transform).height)
+            )
+
+        } catch {
+            print(error.localizedDescription)
+        }
             
             // MARK: Export
             let outputURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
