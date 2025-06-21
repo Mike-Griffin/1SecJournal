@@ -16,16 +16,16 @@ import AVFoundation
     var showCreateStitch = false
     
     // All videos are passed down to the CreateStitchViewModel
-    var videos: [VideoEntry]
+    var videos: [DailyVideoEntry]
     
     var onSave: (URL) -> Void
     var onDismiss: (() -> Void)
-    var onSelectedStitchVideos: ([VideoEntry]) -> Void
+    var onSelectedStitchVideos: ([DailyVideoEntry]) -> Void
     
-    init(videos: [VideoEntry],
+    init(videos: [DailyVideoEntry],
         onDismiss: @escaping () -> Void,
          onSave: @escaping (URL) -> Void,
-         onSelectedStitchVideos: @escaping ([VideoEntry]) -> Void
+         onSelectedStitchVideos: @escaping ([DailyVideoEntry]) -> Void
     ) {
         self.onDismiss = onDismiss
         self.onSave = onSave

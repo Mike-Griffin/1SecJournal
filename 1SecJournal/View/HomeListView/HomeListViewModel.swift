@@ -56,11 +56,27 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     var description: String { "" } // prevents UUID or file path from flashing on sheet
 }
 
+struct ComposedStitchVideo: Identifiable {
+    let id = UUID()
+    let url: URL
+    let dailyVideos: [DailyVideoEntry]
+}
+
+enum VideoListDisplayType: String, CaseIterable {
+    case daily
+    case stitch
+}
+
 @MainActor
 @Observable class HomeListViewModel {
-    // Video Display
-    var videos: [VideoEntry] = []
-    var sectionedVideos: [(section: VideoSection, videos: [VideoEntry])] = []
+    var videoListDisplayType: VideoListDisplayType = .daily
+    
+    // Daily Video Display
+    var videos: [DailyVideoEntry] = []
+    var sectionedVideos: [(section: VideoSection, videos: [DailyVideoEntry])] = []
+    
+    // Stitch Video Display
+    var stitchVideos: [StitchedVideoEntry] = []
     
     // Share Sheet
     var selectedShareURL: SelectedIdentifiableURL?
@@ -70,13 +86,15 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     var uploadTodayVideoCTATapped: Bool = false
     
     // Create a stitch of videos
-    var stichVideoUrl: SelectedIdentifiableURL?
+    //var stichVideoUrl: SelectedIdentifiableURL?
+    var selectedComposedStitchVideo: ComposedStitchVideo?
     
     var modelContext: ModelContext
     
     init(_ modelContext: ModelContext) {
         self.modelContext = modelContext
         handleFetchAndGroupVideos()
+        fetchStitchVideos()
     }
     
     func handleEnterForeground() {
@@ -84,13 +102,13 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     }
     
     func handleFetchAndGroupVideos() {
-        fetchVideos()
+        fetchDailyVideos()
         groupVideos()
     }
     
-    private func fetchVideos() {
+    private func fetchDailyVideos() {
         do {
-            let descriptor = FetchDescriptor<VideoEntry>(
+            let descriptor = FetchDescriptor<DailyVideoEntry>(
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
             self.videos = try modelContext.fetch(descriptor)
@@ -99,8 +117,20 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
         }
     }
     
+    private func fetchStitchVideos() {
+        do {
+            let descriptor = FetchDescriptor<StitchedVideoEntry>(
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            self.stitchVideos = try modelContext.fetch(descriptor)
+            print("Fetched: \(stitchVideos.count) stitch videos")
+        } catch {
+            print("Failed to fetch stitch videos: \(error)")
+        }
+    }
+    
     private func groupVideos() {
-        var groupedVideos: [VideoSection: [VideoEntry]] = [:]
+        var groupedVideos: [VideoSection: [DailyVideoEntry]] = [:]
 
         let calendar = Calendar.current
         let formatter = DateFormatter()
@@ -177,7 +207,7 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
         modelContext.delete(video)
     }
     
-    func saveVideo(url: URL) async {
+    func saveVideo(url: URL, dailyVideos: [DailyVideoEntry]?) async {
         
         let uuidString = UUID().uuidString
         
@@ -212,11 +242,17 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
                 }
 
             }
+            if let dailyVideos = dailyVideos {
+                let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: dailyVideos)
+                modelContext.insert(stitchedVideo)
+                print("Stitch Video inserted \(stitchedVideo)")
 
-            let newVideo = VideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName)
-            videos.append(newVideo)
-            modelContext.insert(newVideo)
-            groupVideos()
+            } else {
+                let newVideo = DailyVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName)
+                videos.append(newVideo)
+                modelContext.insert(newVideo)
+                groupVideos()
+            }
                 
         } catch {
             print("Error saving file \(error.localizedDescription)")
@@ -225,8 +261,15 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
 
     }
     
+    func saveStitchSelection() async {
+        guard let stitchSelection = selectedComposedStitchVideo else {
+            return
+        }
+        await saveVideo(url: stitchSelection.url, dailyVideos: stitchSelection.dailyVideos)
+    }
+    
     // MARK: Combine Stitch Videos to create a new one
-    func combineVideos(_ videos: [VideoEntry]) async {
+    func combineVideos(_ videos: [DailyVideoEntry]) async {
         let mixComposition = AVMutableComposition()
         guard let videoTrack = mixComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
             print("Error creating video track")
@@ -301,7 +344,7 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
                 DispatchQueue.main.async {
                     switch exportSession.status {
                     case .completed:
-                        self?.stichVideoUrl = SelectedIdentifiableURL(url: outputURL)
+                        self?.selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
                     default:
                         print("Export failed: \(exportSession.error?.localizedDescription ?? "Unknown error")")
                     }
@@ -327,7 +370,7 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
             self?.createPromptType = nil
         } onSave: { [weak self] url in
             Task {
-               await self?.saveVideo(url: url)
+               await self?.saveVideo(url: url, dailyVideos: nil)
             }
         } onSelectedStitchVideos: { [weak self] selectedStitchVideos in
             // create a new video that combines the videos

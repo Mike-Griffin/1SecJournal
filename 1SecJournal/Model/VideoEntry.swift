@@ -11,7 +11,7 @@ import UIKit
     var id: UUID
     var filename: String
     var thumbnailFilename: String
-    var date: Date
+    var date: Date // date video is created
     
     init(filename: String, thumbnailFilename: String) {
         self.id = UUID()

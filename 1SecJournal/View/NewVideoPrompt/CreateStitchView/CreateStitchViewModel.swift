@@ -19,12 +19,12 @@ class CreateStitchViewModel {
             // meaning I could keep different selected values for each time frame
         }
     }
-    var videos: [VideoEntry]
+    var videos: [DailyVideoEntry]
     var selectedIds: Set<UUID> = []
     
-    var onSelectStitchVideos: (([VideoEntry]) -> Void)
+    var onSelectStitchVideos: (([DailyVideoEntry]) -> Void)
     
-    init(videos: [VideoEntry], onSelectStitchVideos: @escaping ([VideoEntry]) -> Void) {
+    init(videos: [DailyVideoEntry], onSelectStitchVideos: @escaping ([DailyVideoEntry]) -> Void) {
         self.videos = videos
         self.onSelectStitchVideos = onSelectStitchVideos
     }

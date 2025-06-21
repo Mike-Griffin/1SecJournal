@@ -21,33 +21,62 @@ struct HomeListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                List {
-                    if viewModel.shouldShowTodayPrompt() {
-                        TapToRecordView(text: "Upload a video for today", height: 140)
-                            .onTapGesture {
-                                viewModel.uploadTodayVideoCTATapped = true
-                                viewModel.createPromptType = .recordOnly // consider just going directly to the camera
-                            }
+                Picker("Select Video typs", selection: $viewModel.videoListDisplayType) {
+                    ForEach (VideoListDisplayType.allCases, id: \.self) { displayType in
+                        Text(displayType.rawValue)
                     }
-                    ForEach(viewModel.sectionedVideos, id: \.section) { section, videos in
-                        Section(header: Text(section.title)) {
-                            ForEach(videos) { video in
-                                VideoRowCell(
-                                    viewModel: viewModel,
-                                    video: video)
+                }
+                .pickerStyle(.segmented)
+                VStack {
+                    // Daily List View. Extract
+                        List {
+                            if viewModel.videoListDisplayType == .daily {
+
+                            if viewModel.shouldShowTodayPrompt() {
+                                TapToRecordView(text: "Upload a video for today", height: 140)
+                                    .onTapGesture {
+                                        viewModel.uploadTodayVideoCTATapped = true
+                                        viewModel.createPromptType = .recordOnly // consider just going directly to the camera
+                                    }
+                            }
+                            ForEach(viewModel.sectionedVideos, id: \.section) { section, videos in
+                                Section(header: Text(section.title)) {
+                                    ForEach(videos) { video in
+                                        VideoRowCell(
+                                            viewModel: viewModel,
+                                            video: video)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            tappedVideo = video
+                                        }
+                                    }
+                                }
+                                .listRowInsets(EdgeInsets())
+                            }
+                            .onDelete(perform: deleteItem)
+                            } else {
+                                ForEach(viewModel.stitchVideos, id: \.id) { video in
+                                    VideoRowCell(
+                                        viewModel: viewModel,
+                                        video: video)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
                                         tappedVideo = video
                                     }
+                                }
+                                //                                .onDelete(perform: {
+                                //                                        print("TODO handle stitch delete? Can I just reuse actually??")
+                                //                                })
                             }
-                        }
-                        .listRowInsets(EdgeInsets())
+//                                .onDelete(perform: {
+//                                        print("TODO handle stitch delete? Can I just reuse actually??")
+//                                })
                     }
-                    .onDelete(perform: deleteItem)
-                }
-                .listStyle(.plain)
-                .navigationDestination(item: $tappedVideo) { video in
-                    VideoPlayerWrapperView(video: video)
+                        .listStyle(.plain)
+                        .navigationDestination(item: $tappedVideo) { video in
+                            VideoPlayerWrapperView(video: video)
+                        }
+
                 }
                 Spacer()
                 HStack {
@@ -78,8 +107,17 @@ struct HomeListView: View {
             .sheet(item: $viewModel.selectedShareURL) { video in
                 ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
             }
-            .sheet(item: $viewModel.stichVideoUrl) { videoUrl in
-                VideoPlayer(player: AVPlayer(url: videoUrl.url))
+            .sheet(item: $viewModel.selectedComposedStitchVideo) { stitchVideo in
+                VStack {
+                    VideoPlayer(player: AVPlayer(url: stitchVideo.url))
+                    Button {
+                        Task {
+                            await viewModel.saveStitchSelection()
+                        }
+                    } label: {
+                        SaveButtonView()
+                    }
+                }
             }
             .navigationTitle("All Videos")
             

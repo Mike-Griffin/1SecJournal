@@ -75,9 +75,9 @@ struct CustomStitchSelectionView: View {
     let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
     
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 8) {
+        LazyVGrid(columns: columns, spacing: 24) {
             ForEach(viewModel.videos) { video in
-                VStack {
+                VStack(spacing: 0) {
                     ZStack {
 
                         Image(uiImage: video.thumbnailImage!)
