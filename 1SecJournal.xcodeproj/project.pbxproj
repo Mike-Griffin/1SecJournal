@@ -10,6 +10,9 @@
 		7F6389252DFF15D400DC8DCF /* VideoJournalIconV3.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7F6389242DFF15D400DC8DCF /* VideoJournalIconV3.icon */; };
 		7F6389272E074B3900DC8DCF /* StitchedVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389262E074B3300DC8DCF /* StitchedVideoEntry.swift */; };
 		7F6389292E074B4C00DC8DCF /* DailyVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389282E074B4500DC8DCF /* DailyVideoEntry.swift */; };
+		7F63892C2E08B5B200DC8DCF /* IssueReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 7F63892B2E08B5B200DC8DCF /* IssueReporting */; };
+		7F6389302E08B5B200DC8DCF /* XCTestDynamicOverlay in Frameworks */ = {isa = PBXBuildFile; productRef = 7F63892F2E08B5B200DC8DCF /* XCTestDynamicOverlay */; };
+		7F6389322E08B87500DC8DCF /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389312E08B87300DC8DCF /* Logger.swift */; };
 		7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */; };
 		7FAEDB142DF535FB00011D8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDB102DF535FB00011D8C /* Assets.xcassets */; };
 		7FAEDB152DF535FB00011D8C /* VideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */; };
@@ -39,6 +42,7 @@
 		7F6389242DFF15D400DC8DCF /* VideoJournalIconV3.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = VideoJournalIconV3.icon; sourceTree = "<group>"; };
 		7F6389262E074B3300DC8DCF /* StitchedVideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StitchedVideoEntry.swift; sourceTree = "<group>"; };
 		7F6389282E074B4500DC8DCF /* DailyVideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyVideoEntry.swift; sourceTree = "<group>"; };
+		7F6389312E08B87300DC8DCF /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEntry.swift; sourceTree = "<group>"; };
 		7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
@@ -71,6 +75,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F63892C2E08B5B200DC8DCF /* IssueReporting in Frameworks */,
+				7F6389302E08B5B200DC8DCF /* XCTestDynamicOverlay in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +104,7 @@
 		7FAEDAF52DF535FB00011D8C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				7F6389312E08B87300DC8DCF /* Logger.swift */,
 				7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */,
 			);
 			path = Utilities;
@@ -232,6 +239,8 @@
 			);
 			name = 1SecJournal;
 			packageProductDependencies = (
+				7F63892B2E08B5B200DC8DCF /* IssueReporting */,
+				7F63892F2E08B5B200DC8DCF /* XCTestDynamicOverlay */,
 			);
 			productName = 1SecJournal;
 			productReference = 7FB668542D879FF800BD72D9 /* 1SecJournal.app */;
@@ -261,6 +270,10 @@
 			);
 			mainGroup = 7FB6684B2D879FF800BD72D9;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7F63892A2E08B5B200DC8DCF /* XCRemoteSwiftPackageReference "swift-issue-reporting" */,
+				7F6389332E08B9B100DC8DCF /* XCRemoteSwiftPackageReference "xctest-dynamic-overlay" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7FB668552D879FF800BD72D9 /* Products */;
 			projectDirPath = "";
@@ -296,6 +309,7 @@
 				7FAEDB192DF535FB00011D8C /* VideoPlayerWrapperView.swift in Sources */,
 				7FAEDB1A2DF535FB00011D8C /* CameraRecorderOverlayView.swift in Sources */,
 				7FAEDB1B2DF535FB00011D8C /* CameraRecorderViewController.swift in Sources */,
+				7F6389322E08B87500DC8DCF /* Logger.swift in Sources */,
 				7F6389292E074B4C00DC8DCF /* DailyVideoEntry.swift in Sources */,
 				7FAEDB1C2DF535FB00011D8C /* RecordVideoButtonView.swift in Sources */,
 				7FAEDB1D2DF535FB00011D8C /* CreateStitchView.swift in Sources */,
@@ -529,6 +543,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7F63892A2E08B5B200DC8DCF /* XCRemoteSwiftPackageReference "swift-issue-reporting" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-issue-reporting";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
+		7F6389332E08B9B100DC8DCF /* XCRemoteSwiftPackageReference "xctest-dynamic-overlay" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/xctest-dynamic-overlay";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7F63892B2E08B5B200DC8DCF /* IssueReporting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F63892A2E08B5B200DC8DCF /* XCRemoteSwiftPackageReference "swift-issue-reporting" */;
+			productName = IssueReporting;
+		};
+		7F63892F2E08B5B200DC8DCF /* XCTestDynamicOverlay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F63892A2E08B5B200DC8DCF /* XCRemoteSwiftPackageReference "swift-issue-reporting" */;
+			productName = XCTestDynamicOverlay;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7FB6684C2D879FF800BD72D9 /* Project object */;
 }

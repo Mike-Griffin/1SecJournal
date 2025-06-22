@@ -7,6 +7,7 @@
 import SwiftUI
 import SwiftData
 import AVKit
+import IssueReporting
 
 struct HomeListView: View {
     @Bindable var viewModel: HomeListViewModel
@@ -124,12 +125,11 @@ struct HomeListView: View {
         }
         .onAppear {
             for video in viewModel.videos {
-                print(video.fileURL)
+                AppLogger.log("Checking... \(video.fileURL)", level: .verbose)
                 if FileManager.default.fileExists(atPath: video.fileURL.path()) {
-                    print("yes file exists")
+                    AppLogger.log("yes file exists \(video.fileURL)", level: .verbose)
                 } else {
-                    print("no file does not exist")
-
+                    reportIssue("File does not exist at url \(video.fileURL)")
                 }
             }
         }

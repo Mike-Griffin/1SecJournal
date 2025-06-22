@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import AVFoundation
+import IssueReporting
 
 let kAppGroup = "group.com.comedichoney.1SecJournal"
 
@@ -113,7 +114,7 @@ enum VideoListDisplayType: String, CaseIterable {
             )
             self.videos = try modelContext.fetch(descriptor)
         } catch {
-            print("Failed to fetch videos: \(error)")
+            reportIssue(error)
         }
     }
     
@@ -199,7 +200,7 @@ enum VideoListDisplayType: String, CaseIterable {
             try FileManager.default.copyItem(at: video.fileURL, to: targetURL)
             selectedShareURL = SelectedIdentifiableURL(url: targetURL)
         } catch {
-            print("❌ Failed to copy file for sharing:", error)
+            reportIssue(error, "Failed to copy file for sharing:")
          }
     }
     
@@ -215,7 +216,7 @@ enum VideoListDisplayType: String, CaseIterable {
         
         // Get the Documents directory
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
-            print("invalid containerURL")
+            reportIssue("invalid containerURL")
             return
         }
         let destinationURL = containerURL.appendingPathComponent(fileName)
@@ -226,7 +227,7 @@ enum VideoListDisplayType: String, CaseIterable {
             }
             
             try FileManager.default.copyItem(at: url, to: destinationURL)
-            print("Video saved to: \(destinationURL)")
+            AppLogger.log("Video saved to: \(destinationURL)")
             var thumbnailFileName = ""
             if let thumbnailImage = await getThumbnail(from: destinationURL) {
                 thumbnailFileName = uuidString + "thumb.jpg"
@@ -245,7 +246,7 @@ enum VideoListDisplayType: String, CaseIterable {
             if let dailyVideos = dailyVideos {
                 let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: dailyVideos)
                 modelContext.insert(stitchedVideo)
-                print("Stitch Video inserted \(stitchedVideo)")
+                AppLogger.log("Stitch Video inserted in modelContext \(stitchedVideo.id)")
 
             } else {
                 let newVideo = DailyVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName)
@@ -255,7 +256,7 @@ enum VideoListDisplayType: String, CaseIterable {
             }
                 
         } catch {
-            print("Error saving file \(error.localizedDescription)")
+            reportIssue("Error saving file \(error.localizedDescription)")
         }
         
 
@@ -270,9 +271,10 @@ enum VideoListDisplayType: String, CaseIterable {
     
     // MARK: Combine Stitch Videos to create a new one
     func combineVideos(_ videos: [DailyVideoEntry]) async {
+        let videos = videos.sorted(by: { $0.date < $1.date })
         let mixComposition = AVMutableComposition()
         guard let videoTrack = mixComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
-            print("Error creating video track")
+            reportIssue("Error creating video track")
             return
         }
         
@@ -284,7 +286,7 @@ enum VideoListDisplayType: String, CaseIterable {
                 let asset = AVURLAsset(url: videoURL)
                 do {
                     guard let track = try await asset.loadTracks(withMediaType: .video).first else {
-                        print("no video track found")
+                        reportIssue("no video track found")
                         continue
                     }
                     let duration = try await asset.load(.duration)
@@ -314,7 +316,7 @@ enum VideoListDisplayType: String, CaseIterable {
         let firstTrack = AVURLAsset(url: videos.first!.fileURL)
         do {
             guard let firstVideoTrack = try await firstTrack.loadTracks(withMediaType: .video).first else {
-                print("no video track")
+                reportIssue("no video track")
                 return
             }
             let naturalSize = try await firstVideoTrack.load(.naturalSize)
@@ -325,7 +327,7 @@ enum VideoListDisplayType: String, CaseIterable {
             )
 
         } catch {
-            print(error.localizedDescription)
+            reportIssue(error)
         }
             
             // MARK: Export

@@ -35,7 +35,7 @@ struct CreateStitchView: View {
                 Spacer()
                 if(!viewModel.selectedIds.isEmpty) {
                     Button {
-                        print("save with \(viewModel.selectedIds.count) videos")
+                        AppLogger.log("Constructing stitch with \(viewModel.selectedIds.count) videos")
                         dismiss()
                         viewModel.createStitch()
                     } label: {
