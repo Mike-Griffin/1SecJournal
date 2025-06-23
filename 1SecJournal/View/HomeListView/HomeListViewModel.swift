@@ -180,7 +180,7 @@ enum VideoListDisplayType: String, CaseIterable {
                     }
                 }
             } catch {
-                print("❌ Failed to generate thumbnail: \(error)")
+                reportIssue("Failed to generate thumbnail: \(error)")
                 return nil
             }
         
@@ -208,41 +208,12 @@ enum VideoListDisplayType: String, CaseIterable {
         modelContext.delete(video)
     }
     
+    // This should be refactored to two different functions. But for now this works
     func saveVideo(url: URL, dailyVideos: [DailyVideoEntry]?) async {
-        
-        let uuidString = UUID().uuidString
-        
-        let fileName = uuidString + ".mov"
-        
-        // Get the Documents directory
-        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
-            reportIssue("invalid containerURL")
+        guard let (fileName, thumbnailFileName) = await VideoFileManager.generateVideoFileURLs(url: url) else {
             return
         }
-        let destinationURL = containerURL.appendingPathComponent(fileName)
-        
-        do {
-            if FileManager.default.fileExists(atPath: destinationURL.path()) {
-                try FileManager.default.removeItem(at: destinationURL)
-            }
-            
-            try FileManager.default.copyItem(at: url, to: destinationURL)
-            AppLogger.log("Video saved to: \(destinationURL)")
-            var thumbnailFileName = ""
-            if let thumbnailImage = await getThumbnail(from: destinationURL) {
-                thumbnailFileName = uuidString + "thumb.jpg"
-                let thumbDestinationURL = containerURL.appendingPathComponent(thumbnailFileName)
-                if FileManager.default.fileExists(atPath: thumbDestinationURL.path()) {
-                    try FileManager.default.removeItem(at: thumbDestinationURL)
-                }
-                
-                if let data = thumbnailImage.jpegData(compressionQuality: 0.8) {
-                    do {
-                        try data.write(to: thumbDestinationURL)
-                    }
-                }
 
-            }
             if let dailyVideos = dailyVideos {
                 let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: dailyVideos)
                 modelContext.insert(stitchedVideo)
@@ -255,9 +226,7 @@ enum VideoListDisplayType: String, CaseIterable {
                 groupVideos()
             }
                 
-        } catch {
-            reportIssue("Error saving file \(error.localizedDescription)")
-        }
+
         
 
     }
@@ -272,86 +241,9 @@ enum VideoListDisplayType: String, CaseIterable {
     // MARK: Combine Stitch Videos to create a new one
     func combineVideos(_ videos: [DailyVideoEntry]) async {
         let videos = videos.sorted(by: { $0.date < $1.date })
-        let mixComposition = AVMutableComposition()
-        guard let videoTrack = mixComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
-            reportIssue("Error creating video track")
-            return
+        if let outputURL = await AVManager.combineVideos(videos: videos) {
+            selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
         }
-        
-        
-        var runningDuration: CMTime = .zero
-        var instructions: [AVMutableVideoCompositionInstruction] = []
-            for video in videos {
-                let videoURL = video.fileURL
-                let asset = AVURLAsset(url: videoURL)
-                do {
-                    guard let track = try await asset.loadTracks(withMediaType: .video).first else {
-                        reportIssue("no video track found")
-                        continue
-                    }
-                    let duration = try await asset.load(.duration)
-                    let timeRange = CMTimeRange(start: .zero, duration: duration)
-                    try videoTrack.insertTimeRange(timeRange, of: track, at: runningDuration)
-                    
-                    let instruction = AVMutableVideoCompositionInstruction()
-                    instruction.timeRange = CMTimeRange(start: runningDuration, duration: duration)
-
-                    let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-                    layerInstruction.setTransform(try await track.load(.preferredTransform), at: runningDuration)
-
-                    instruction.layerInstructions = [layerInstruction]
-                    instructions.append(instruction)
-                    
-                    runningDuration = CMTimeAdd(runningDuration, duration)
-                } catch {
-                    print(error.localizedDescription)
-                    continue
-                }
-            }
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.instructions = instructions
-        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
-
-        // Use the render size from the first track (or max size if clips vary)
-        let firstTrack = AVURLAsset(url: videos.first!.fileURL)
-        do {
-            guard let firstVideoTrack = try await firstTrack.loadTracks(withMediaType: .video).first else {
-                reportIssue("no video track")
-                return
-            }
-            let naturalSize = try await firstVideoTrack.load(.naturalSize)
-            let transform = try await firstVideoTrack.load(.preferredTransform)
-            videoComposition.renderSize = CGSize(
-                width: abs(naturalSize.applying(transform).width),
-                height: abs(naturalSize.applying(transform).height)
-            )
-
-        } catch {
-            reportIssue(error)
-        }
-            
-            // MARK: Export
-            let outputURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
-            
-            guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: AVAssetExportPresetHighestQuality) else {
-                print("Failed to create export session")
-                return
-            }
-            
-            exportSession.outputURL = outputURL
-            exportSession.outputFileType = .mov
-            exportSession.videoComposition = videoComposition
-            
-            exportSession.exportAsynchronously { [weak self] in
-                DispatchQueue.main.async {
-                    switch exportSession.status {
-                    case .completed:
-                        self?.selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
-                    default:
-                        print("Export failed: \(exportSession.error?.localizedDescription ?? "Unknown error")")
-                    }
-                }
-            }
     }
 
     
@@ -377,8 +269,8 @@ enum VideoListDisplayType: String, CaseIterable {
         } onSelectedStitchVideos: { [weak self] selectedStitchVideos in
             // create a new video that combines the videos
             // set this url into a new value
-            Task {
-                await  self?.combineVideos(selectedStitchVideos)
+            Task.detached(priority: .userInitiated) {
+                await self?.combineVideos(selectedStitchVideos)
             }
         }
         
