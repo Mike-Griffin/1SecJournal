@@ -24,31 +24,57 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupCameraSession()
+//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            setupCameraSession()
+        //}
+//        setupCameraSession()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+//        DispatchQueue.main.async {
+            layoutOverlay()
+        //}
     }
     
     override func viewDidLayoutSubviews() {
-         layoutOverlay()
+         // layoutOverlay()
     }
     
     func setupCameraSession() {
+        AppLogger.log("👀 setupCameraSession is beginning \(Date())", level: .verbose)
+//        
+//        do {
+//            let session = AVAudioSession.sharedInstance()
+//            try session.setCategory(.playAndRecord, mode: .videoRecording, options: [.defaultToSpeaker])
+//            try session.setActive(true)
+//        } catch {
+//            AppLogger.log("❌ Failed to configure AVAudioSession: \(error)")
+//        }
+//        captureSession.automaticallyConfiguresApplicationAudioSession = false
+
         captureSession.beginConfiguration()
+        
          captureSession.sessionPreset = .high
 
          // Add input
          guard let device = AVCaptureDevice.default(for: .video),
                let input = try? AVCaptureDeviceInput(device: device),
                captureSession.canAddInput(input) else {
-             print("❌ Cannot add camera input")
+             AppLogger.log("❌ Cannot add camera input")
              return
          }
          captureSession.addInput(input)
         
-        if let audioDevice = AVCaptureDevice.default(for: .audio),
-           let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
-           captureSession.canAddInput(audioInput) {
-            captureSession.addInput(audioInput)
-        }
+        // Testing commenting out audioInput. This solves the slow load time
+        
+//        if let audioDevice = AVCaptureDevice.default(for: .audio),
+//           let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
+//           captureSession.canAddInput(audioInput) {
+//            captureSession.addInput(audioInput)
+//        }
+        
+        AppLogger.log("⏳ captureSession addedInput \(Date())", level: .verbose)
+
 
          // Add output (after input!)
          if captureSession.canAddOutput(videoOutput) {
@@ -56,17 +82,43 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
              videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(1, preferredTimescale: 600)
              videoOutput.minFreeDiskSpaceLimit = 1024 * 1024
          } else {
-             print("❌ Cannot add video output")
+             AppLogger.log("❌ Cannot add video output")
          }
         
+        AppLogger.log("⏳ captureSession addedOutput \(Date())", level: .verbose)
+
+        
         captureSession.commitConfiguration()
+        AppLogger.log("⏳ captureSession committedConfiguration \(Date())", level: .verbose)
+
         DispatchQueue.global().async { [weak self] in
+            // Not needed since I do this at the beginning
+//            try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .videoRecording)
+//            try? AVAudioSession.sharedInstance().setActive(true)
+
+            AppLogger.log("⏳ captureSession startRunning \(Date())", level: .verbose)
+            let now = Date()
+
             self?.captureSession.startRunning()
+            AppLogger.log("⏳ captureSession startRunning finished at \(Date()) took this long \(Date().timeIntervalSince(now))")
+
+
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if self?.captureSession.isRunning == true {
+                    AppLogger.log("✅ Camera is running \(Date())", level: .verbose)
+                    // Here you could hide a loading indicator, show preview, etc.
+                } else {
+                    AppLogger.log("⌛ Camera not running yet \(Date())", level: .verbose)
+                }
+            }
+
         }
     }
 
     func layoutOverlay() {
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        guard previewLayer == nil else { return }
+        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer.videoGravity = .resizeAspectFill
         previewLayer.frame = view.frame
         view.layer.addSublayer(previewLayer)
@@ -84,15 +136,15 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     }
 
     @objc func handleRecordButtonTap() {
-        print("Inputs: \(captureSession.inputs)")
-        print("Outputs: \(captureSession.outputs)")
+        AppLogger.log("Inputs: \(captureSession.inputs)", level: .verbose)
+        AppLogger.log("Outputs: \(captureSession.outputs)", level: .verbose)
         if let connection = videoOutput.connection(with: .video) {
-            print("✅ Video connection exists. Active: \(connection.isActive), Enabled: \(connection.isEnabled)")
+            AppLogger.log("✅ Video connection exists. Active: \(connection.isActive), Enabled: \(connection.isEnabled)", level: .verbose)
         } else {
-            print("❌ No video connection found")
+            AppLogger.log("❌ No video connection found")
         }
         guard let connection = videoOutput.connection(with: .video), connection.isActive else {
-            print("Video connection is not active")
+            AppLogger.log("Video connection is not active")
             return
         }
         guard !videoOutput.isRecording else {

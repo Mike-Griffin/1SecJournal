@@ -48,6 +48,7 @@ struct AVManager {
         var firstNaturalSize: CGSize? = nil
         
         for (index, video) in videos.enumerated() {
+            AppLogger.log("Processing stitching video at index \(index)")
                 let videoURL = video.fileURL
                 let asset = AVURLAsset(url: videoURL)
                 do {
@@ -77,7 +78,7 @@ struct AVManager {
                     
                     runningDuration = CMTimeAdd(runningDuration, duration)
                 } catch {
-                    print(error.localizedDescription)
+                    AppLogger.log(error.localizedDescription)
                     continue
                 }
             }
@@ -105,6 +106,7 @@ struct AVManager {
             exportSession.videoComposition = videoComposition
         do {
             try await exportSession.export(to: outputURL, as: .mov)
+            AppLogger.log("Exported stitched video to \(outputURL)")
             return outputURL
         } catch {
             reportIssue(error)

@@ -8,6 +8,8 @@ import SwiftUI
 
 struct CameraRecorderOverlayView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var router: NavigationRouter
+
 
     @State private var recordPressed = false
 let recordButtonAction: () -> ()
@@ -15,7 +17,13 @@ let recordButtonAction: () -> ()
         VStack {
             HStack {
                 Button {
+                    // should remove the dismiss
                     dismiss()
+                    Task { @MainActor in
+                        if !router.path.isEmpty {
+                            router.path.removeLast()
+                        }
+                    }
                 } label: {
                     Image(systemName: "x.circle")
                         .resizable()

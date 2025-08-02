@@ -12,6 +12,7 @@ import SwiftData
 
 struct NewVideoPromptView: View {
     @Bindable private var viewModel: NewVideoPromptViewModel
+//    @EnvironmentObject var router: NavigationRouter
     let showStitch: Bool
     
     
@@ -33,15 +34,15 @@ struct NewVideoPromptView: View {
             }
             Spacer()
         }
-        .fullScreenCover(isPresented: $viewModel.showCamera) {
-            VideoRecorderView(videoURL: $viewModel.videoURL)
-        }
+//        .fullScreenCover(isPresented: $viewModel.showCamera) {
+//            VideoRecorderView(videoURL: $viewModel.videoURL)
+//        }
         .sheet(isPresented: $viewModel.showPhotoLibrary) {
             // TODO: Can remove the photoLibrary type
             VideoPickerView(sourceType: .photoLibrary, videoURL: $viewModel.videoURL)
         }
         .sheet(isPresented: $viewModel.showCreateStitch) {
-            CreateStitchView(viewModel: viewModel.createStitchViewModel())
+//            CreateStitchView(viewModel: viewModel.createStitchViewModel())
         }
     }
 
@@ -76,6 +77,7 @@ struct PromptHeaderView: View {
 
 struct VideoInformationView: View {
     @Bindable var viewModel: NewVideoPromptViewModel
+    @EnvironmentObject var router: NavigationRouter // Should I pass this into viewModel
     let showStitch: Bool
     var body: some View {
         VStack  {
@@ -121,9 +123,11 @@ struct VideoInformationView: View {
                     TapToRecordView(text: "Tap to record", height: 260)
                         .onTapGesture {
                             if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                                viewModel.showCamera = true
+                                Task { @MainActor in
+                                    router.path.append(NavigationRouter.Destination.videoRecorder)
+                                }
                             } else {
-                                print("Camera not available")
+                                AppLogger.log("Camera not available")
                             }
                         }
                     if showStitch {

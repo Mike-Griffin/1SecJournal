@@ -12,6 +12,7 @@ import IssueReporting
 struct HomeListView: View {
     @Bindable var viewModel: HomeListViewModel
     @State private var tappedVideo: VideoEntry? = nil
+    @EnvironmentObject private var router: NavigationRouter
         
     @Environment(\.scenePhase) private var scenePhase
     
@@ -53,9 +54,16 @@ struct HomeListView: View {
                                     }
                                 }
                                 .listRowInsets(EdgeInsets())
+                                .scrollIndicators(.hidden)
                             }
                             .onDelete(perform: deleteItem)
                             } else {
+                                Button {
+                                    router.path.append(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
+                                } label: {
+                                    Text("Create Stitch")
+                                        .pillButtonStyle(backgroundColor: .secondary)
+                                }
                                 ForEach(viewModel.stitchVideos, id: \.id) { video in
                                     VideoRowCell(
                                         viewModel: viewModel,
@@ -66,11 +74,11 @@ struct HomeListView: View {
                                     }
                                 }
                                 //                                .onDelete(perform: {
-                                //                                        print("TODO handle stitch delete? Can I just reuse actually??")
+                                //                                        AppLogger.log("TODO handle stitch delete? Can I just reuse actually??")
                                 //                                })
                             }
 //                                .onDelete(perform: {
-//                                        print("TODO handle stitch delete? Can I just reuse actually??")
+//                                        AppLogger.log("TODO handle stitch delete? Can I just reuse actually??")
 //                                })
                     }
                         .listStyle(.plain)
@@ -83,7 +91,11 @@ struct HomeListView: View {
                 HStack {
                     Spacer()
                     Button {
-                        viewModel.createPromptType = .recordAndStitch
+                        // Legacy approach to open a prompt pop up
+                        // viewModel.createPromptType = .recordAndStitch
+                        
+                        // New approach, go straight to the camera
+                        router.path.append(NavigationRouter.Destination.videoRecorder)
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 40, weight: .bold)) // Large and bold plus icon
@@ -142,6 +154,7 @@ struct HomeListView: View {
 
     struct VideoRowCell:  View {
         @Bindable var viewModel: HomeListViewModel
+        @EnvironmentObject var router: NavigationRouter
         let video: VideoEntry
 //        @Binding var isSharedSheetPresented: Bool
         
@@ -165,7 +178,7 @@ struct HomeListView: View {
                 Spacer()
                 Menu {
                     Button("Stitch to New Video") {
-                        // Handle stitching
+                        router.path.append(NavigationRouter.Destination.createStitch(videos: viewModel.videos, preselectedId: video.id))
                     }
                     
                     Button("Share") {

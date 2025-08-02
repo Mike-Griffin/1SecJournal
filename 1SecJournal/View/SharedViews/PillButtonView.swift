@@ -13,6 +13,25 @@ struct PillButtonView: View {
     
     var body: some View {
         Text(text)
+            .pillButtonStyle(backgroundColor: backgroundColor)
+    }
+}
+
+#Preview {
+    SaveButtonView()
+}
+
+extension View {
+    func pillButtonStyle(backgroundColor: Color) -> some View {
+        modifier(PillViewModifier(backgroundColor: backgroundColor))
+    }
+}
+
+struct PillViewModifier: ViewModifier {
+    let backgroundColor: Color
+
+    func body(content: Content) -> some View {
+        content
             .fontWeight(.semibold)
             .frame(width: 100)
             .padding(8)
@@ -20,8 +39,4 @@ struct PillButtonView: View {
             .foregroundStyle(.white)
             .clipShape(Capsule())
     }
-}
-
-#Preview {
-    SaveButtonView()
 }

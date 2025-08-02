@@ -77,5 +77,5 @@ struct RecordVideoButtonView: View {
 }
 
 #Preview {
-    RecordVideoButtonView(action: { print("record tapped")})
+    RecordVideoButtonView(action: { AppLogger.log("record tapped")})
 }

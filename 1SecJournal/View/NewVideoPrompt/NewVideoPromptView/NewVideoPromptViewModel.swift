@@ -56,10 +56,10 @@ import AVFoundation
         onDismiss()
     }
     
-    func createStitchViewModel() -> CreateStitchViewModel {
-        CreateStitchViewModel(videos: videos) { [weak self] selectedStitchVideos in
-            self?.onDismiss()
-            self?.onSelectedStitchVideos(selectedStitchVideos)
-        }
-    }
+//    func createStitchViewModel() -> CreateStitchViewModel {
+//        CreateStitchViewModel(videos: videos) { [weak self] selectedStitchVideos in
+//            self?.onDismiss()
+//            self?.onSelectedStitchVideos(selectedStitchVideos)
+//        }
+//    }
 }

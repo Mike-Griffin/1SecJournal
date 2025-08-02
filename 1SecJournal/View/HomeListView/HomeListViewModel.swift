@@ -124,9 +124,9 @@ enum VideoListDisplayType: String, CaseIterable {
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
             self.stitchVideos = try modelContext.fetch(descriptor)
-            print("Fetched: \(stitchVideos.count) stitch videos")
+            AppLogger.log("Fetched: \(stitchVideos.count) stitch videos")
         } catch {
-            print("Failed to fetch stitch videos: \(error)")
+            AppLogger.log("Failed to fetch stitch videos: \(error)")
         }
     }
     

@@ -24,7 +24,7 @@ import UIKit
 extension VideoEntry {
     var fileURL: URL {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
-            print("invalid containerURL")
+            AppLogger.log("invalid containerURL")
             return URL(filePath: "")
         }
         return containerURL.appendingPathComponent(filename)

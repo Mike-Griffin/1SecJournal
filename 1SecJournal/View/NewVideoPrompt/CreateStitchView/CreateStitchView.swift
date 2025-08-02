@@ -5,11 +5,24 @@
 //  Created by Mike Griffin on 6/7/25.
 //
 import SwiftUI
+import SwiftData
 
 
 struct CreateStitchView: View {
-    @Bindable var viewModel: CreateStitchViewModel
+//    @Bindable var viewModel: CreateStitchViewModel
     @Environment(\.dismiss) var dismiss
+    
+    @State private var viewModel: CreateStitchViewModel
+    
+    init(videos: [DailyVideoEntry],
+         preselectedVideoId: UUID?,
+         modelContext: ModelContext) {
+        _viewModel = State(wrappedValue:
+                            CreateStitchViewModel(videos: videos,
+                                                  preselectedVideoId: preselectedVideoId,
+                                                  modelContext: modelContext))
+    }
+    
     var body: some View {
         ZStack {
             VStack {
@@ -101,11 +114,15 @@ struct CustomStitchSelectionView: View {
                     Text(video.date.videoFormattedDisplay)
                 }
                 .onTapGesture {
-                    if viewModel.selectedIds.contains(video.id) {
-                        viewModel.selectedIds.remove(video.id)
-                    } else {
-                        viewModel.selectedIds.insert(video.id)
-                    }
+                    AppLogger.log("Tapped \(video.id) and ViewModel selectedIds is \(viewModel.selectedIds)")
+                    // Should be within the viewModel
+//                    if viewModel.selectedIds.contains(video.id) {
+//                        viewModel.selectedIds.remove(video.id)
+//                    } else {
+//                        viewModel.selectedIds.insert(video.id)
+//                        AppLogger.log("Interted \(video.id) so now viewModel.selectedIds is \(viewModel.selectedIds)")
+//                    }
+                    viewModel.selectVideo(video)
                 }
             }
         }
@@ -114,5 +131,7 @@ struct CustomStitchSelectionView: View {
 }
 
 #Preview {
-    CreateStitchView(viewModel: CreateStitchViewModel(videos: []) {_ in })
+    //CreateStitchView(viewModel: CreateStitchViewModel(videos: []) {_ in })
+//    CreateStitchView( videos: [], {_ in })
+
 }
