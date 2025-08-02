@@ -42,7 +42,7 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     
     func setupCameraSession() {
         AppLogger.log("👀 setupCameraSession is beginning \(Date())", level: .verbose)
-//        
+//
 //        do {
 //            let session = AVAudioSession.sharedInstance()
 //            try session.setCategory(.playAndRecord, mode: .videoRecording, options: [.defaultToSpeaker])
@@ -65,13 +65,13 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
          }
          captureSession.addInput(input)
         
-        // Testing commenting out audioInput. This solves the slow load time
+        // Testing commenting out audioInput. In attempt to solve the slow load time
         
-//        if let audioDevice = AVCaptureDevice.default(for: .audio),
-//           let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
-//           captureSession.canAddInput(audioInput) {
-//            captureSession.addInput(audioInput)
-//        }
+        if let audioDevice = AVCaptureDevice.default(for: .audio),
+           let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
+           captureSession.canAddInput(audioInput) {
+            captureSession.addInput(audioInput)
+        }
         
         AppLogger.log("⏳ captureSession addedInput \(Date())", level: .verbose)
 

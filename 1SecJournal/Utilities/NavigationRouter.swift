@@ -32,6 +32,9 @@ final class NavigationRouter: ObservableObject {
     
     func removeLast() {
 //        path.removeLast()
+        guard !navigationStack.isEmpty else {
+            return
+        }
         navigationStack.removeLast()
     }
 }
