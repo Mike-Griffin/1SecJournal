@@ -20,7 +20,7 @@ struct VideoCreationRootView: View {
                 Button {
                     Task { @MainActor in
                         await viewModel.saveVideo()
-                        router.path.removeLast()
+                        router.removeLast()
                     }
                 } label: {
                     Text("Temp save")

@@ -59,7 +59,7 @@ struct HomeListView: View {
                             .onDelete(perform: deleteItem)
                             } else {
                                 Button {
-                                    router.path.append(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
+                                    router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
                                 } label: {
                                     Text("Create Stitch")
                                         .pillButtonStyle(backgroundColor: .secondary)
@@ -95,7 +95,8 @@ struct HomeListView: View {
                         // viewModel.createPromptType = .recordAndStitch
                         
                         // New approach, go straight to the camera
-                        router.path.append(NavigationRouter.Destination.videoRecorder)
+//                        router.path.append(NavigationRouter.Destination.videoRecorder)
+                        router.push(.videoRecorder)
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 40, weight: .bold)) // Large and bold plus icon
@@ -178,7 +179,8 @@ struct HomeListView: View {
                 Spacer()
                 Menu {
                     Button("Stitch to New Video") {
-                        router.path.append(NavigationRouter.Destination.createStitch(videos: viewModel.videos, preselectedId: video.id))
+//                        router.path.append(NavigationRouter.Destination.createStitch(videos: viewModel.videos, preselectedId: video.id))
+                        router.push(.createStitch(videos: viewModel.videos, preselectedId: video.id))
                     }
                     
                     Button("Share") {

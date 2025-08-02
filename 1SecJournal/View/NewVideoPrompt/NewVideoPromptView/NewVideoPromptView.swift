@@ -124,7 +124,8 @@ struct VideoInformationView: View {
                         .onTapGesture {
                             if UIImagePickerController.isSourceTypeAvailable(.camera) {
                                 Task { @MainActor in
-                                    router.path.append(NavigationRouter.Destination.videoRecorder)
+//                                    router.path.append(NavigationRouter.Destination.videoRecorder)
+                                    router.push(.videoRecorder)
                                 }
                             } else {
                                 AppLogger.log("Camera not available")

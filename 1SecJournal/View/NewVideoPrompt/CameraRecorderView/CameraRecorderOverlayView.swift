@@ -20,9 +20,10 @@ let recordButtonAction: () -> ()
                     // should remove the dismiss
                     dismiss()
                     Task { @MainActor in
-                        if !router.path.isEmpty {
-                            router.path.removeLast()
-                        }
+//                        if !router.path.isEmpty {
+//                            router.path.removeLast()
+//                        }
+                        router.removeLast()
                     }
                 } label: {
                     Image(systemName: "x.circle")

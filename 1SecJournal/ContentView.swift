@@ -7,17 +7,7 @@
 
 import SwiftUI
 
-@MainActor
-final class NavigationRouter: ObservableObject {
-    enum Destination: Hashable {
-        case home
-        case videoRecorder
-        case createStitch(videos: [DailyVideoEntry], preselectedId: UUID? = nil)
-    }
 
-    @Published var path = NavigationPath()
-//    @Published var pendingDestination: Destination?
-}
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
@@ -27,9 +17,9 @@ struct ContentView: View {
 
 
     var body: some View {
-        NavigationStack(path: $router.path) {
+        NavigationStack(path: $router.navigationStack) {
             HomeListView(viewModel: HomeListViewModel(modelContext))
-                .navigationDestination(for: NavigationRouter.Destination.self.self) { destination in
+                .navigationDestination(for: NavigationRouter.Destination.self) { destination in
                     switch destination {
                     case .home:
                         HomeListView(viewModel: HomeListViewModel(modelContext))
@@ -47,7 +37,8 @@ struct ContentView: View {
                 .onReceive( NotificationCenter.default.publisher(for: .openVideoRecorder)) {  _ in
                     Task { @MainActor in
                         AppLogger.log("Setting pending destination")
-                        router.path.append(NavigationRouter.Destination.videoRecorder)
+                        router.push(.videoRecorder)
+//                        router.path.append(NavigationRouter.Destination.videoRecorder)
 
                         // Tried this but doesn't seem to work, seems like this can happen after didAppear
 //                        router.pendingDestination = NavigationRouter.Destination.videoRecorder
@@ -72,7 +63,8 @@ struct ContentView: View {
     @MainActor
     func handleLaunchDestination() async {
         if launchDestination == "videoRecorder" {
-            router.path.append(NavigationRouter.Destination.videoRecorder)
+            router.push(.videoRecorder)
+//            router.path.append(NavigationRouter.Destination.videoRecorder)
             launchDestination = nil
         }
     }
