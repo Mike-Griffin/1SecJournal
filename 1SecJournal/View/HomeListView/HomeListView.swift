@@ -82,6 +82,7 @@ struct HomeListView: View {
 //                                })
                     }
                         .listStyle(.plain)
+                        .scrollIndicators(.hidden)
                         .navigationDestination(item: $tappedVideo) { video in
                             VideoPlayerWrapperView(video: video)
                         }
