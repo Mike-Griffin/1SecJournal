@@ -27,7 +27,7 @@ struct ContentView: View {
                         VideoCreationRootView(viewModel: VideoCreationRootViewModel(modelContext))
                             .navigationBarBackButtonHidden()
                     case .createStitch(let videos, let preselectedId):
-                        CreateStitchView(videos: videos, preselectedVideoId: preselectedId, modelContext: modelContext) // TODO: Remove the onSelectStitchVideos
+                        CreateStitchRootView(videos: videos, preselectedVideoId: preselectedId, modelContext: modelContext) // TODO: Remove the onSelectStitchVideos
 /*                        CreateStitchView(viewModel: CreateStitchViewModel(videos: videos, preselectedVideoId: preselectedId, onSelectStitchVideos: {_ in}))*/ // TODO: Remove the onSelectStitchVideos
                     }
                 }

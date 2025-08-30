@@ -10,18 +10,17 @@ import SwiftData
 
 struct CreateStitchView: View {
 //    @Bindable var viewModel: CreateStitchViewModel
-    @Environment(\.dismiss) var dismiss
     
-    @State private var viewModel: CreateStitchViewModel
+    @Bindable var viewModel: CreateStitchViewModel
     
-    init(videos: [DailyVideoEntry],
-         preselectedVideoId: UUID?,
-         modelContext: ModelContext) {
-        _viewModel = State(wrappedValue:
-                            CreateStitchViewModel(videos: videos,
-                                                  preselectedVideoId: preselectedVideoId,
-                                                  modelContext: modelContext))
-    }
+//    init(videos: [DailyVideoEntry],
+//         preselectedVideoId: UUID?,
+//         modelContext: ModelContext) {
+//        _viewModel = State(wrappedValue:
+//                            CreateStitchViewModel(videos: videos,
+//                                                  preselectedVideoId: preselectedVideoId,
+//                                                  modelContext: modelContext))
+//    }
     
     var body: some View {
         ZStack {
@@ -49,7 +48,7 @@ struct CreateStitchView: View {
                 if(!viewModel.selectedIds.isEmpty) {
                     Button {
                         AppLogger.log("Constructing stitch with \(viewModel.selectedIds.count) videos")
-                        dismiss()
+                        //dismiss()
                         viewModel.createStitch()
                     } label: {
                         Text("Create stitch")

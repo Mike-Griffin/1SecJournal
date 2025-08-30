@@ -16,7 +16,7 @@ struct VideoCreationRootView: View {
             VideoRecorderView(videoURL: $viewModel.videoURL)
         } else {
             VStack {
-                VideoPlayerWithOverlayView(videoURL: $viewModel.videoURL)
+                VideoPlayerWithDiscardOverlayView(videoURL: $viewModel.videoURL)
                 Button {
                     Task { @MainActor in
                         await viewModel.saveVideo()

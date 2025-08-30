@@ -25,17 +25,13 @@ struct DisplayListVideoPlayerWrapperView: View {
                 .onDisappear {
                     player.pause()
                 }
-            
-            // Only display the date overlay for daily videos
-            if video is DailyVideoEntry {
-                Text(video.date.videoFormattedDisplay)
-                    .padding(8)
-                    .background(.ultraThinMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .foregroundColor(.white)
-                    .font(.caption)
-                    .padding()
-            }
+            Text(video.date.videoFormattedDisplay)
+                .padding(8)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .foregroundColor(.white)
+                .font(.caption)
+                .padding()
         }
     }
 }

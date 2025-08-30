@@ -12,7 +12,7 @@ import AuthenticationServices
 final class AuthViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var userId: String?
+    @Published var userId: UUID?
     
     fileprivate var currentNonce: String?
     
@@ -28,20 +28,20 @@ final class AuthViewModel: ObservableObject {
         
         isLoading = true
         defer { isLoading = false }
-        // TODO: Supabase integration
         
-        //    do {
-        //      let session = try await Supa.client.auth.signInWithIdToken(
-        //        credentials: .init(provider: .apple, idToken: idToken, nonce: rawNonce)
-        //      )
-        //      self.userId = session.user.id
-        //      self.errorMessage = nil
-        //    } catch {
-        //      self.errorMessage = "Sign-in failed: \(error.localizedDescription)"
-        //    }
-        //  }
+            do {
+              let session = try await Supa.client.auth.signInWithIdToken(
+                credentials: .init(provider: .apple, idToken: idToken, nonce: rawNonce)
+              )
+              self.userId = session.user.id
+              self.errorMessage = nil
+                print("Sign in succeeded")
+            } catch {
+              self.errorMessage = "Sign-in failed: \(error.localizedDescription)"
+            }
+          
     }
-    
+}
     struct SignInWithAppleButtonView: View {
         @StateObject private var vm = AuthViewModel()
         
@@ -84,4 +84,4 @@ final class AuthViewModel: ObservableObject {
             .padding()
         }
     }
-}
+

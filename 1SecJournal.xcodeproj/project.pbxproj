@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7F1D56BB2E0A2685001069D0 /* IssueReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 7F1D56BA2E0A2685001069D0 /* IssueReporting */; };
-		7F1D56BD2E0A2685001069D0 /* XCTestDynamicOverlay in Frameworks */ = {isa = PBXBuildFile; productRef = 7F1D56BC2E0A2685001069D0 /* XCTestDynamicOverlay */; };
 		7F6389252DFF15D400DC8DCF /* VideoJournalIconV3.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7F6389242DFF15D400DC8DCF /* VideoJournalIconV3.icon */; };
 		7F6389272E074B3900DC8DCF /* StitchedVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389262E074B3300DC8DCF /* StitchedVideoEntry.swift */; };
 		7F6389292E074B4C00DC8DCF /* DailyVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389282E074B4500DC8DCF /* DailyVideoEntry.swift */; };
@@ -21,16 +19,17 @@
 		7F85E6172E39AC9F00E20634 /* VideoRecorderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6162E39AC9A00E20634 /* VideoRecorderViewModel.swift */; };
 		7F85E6192E3AF1EE00E20634 /* VideoCreationRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6182E3AF1E300E20634 /* VideoCreationRootView.swift */; };
 		7F85E61B2E3AF24000E20634 /* VideoCreationRootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61A2E3AF23900E20634 /* VideoCreationRootViewModel.swift */; };
-		7F85E61D2E3AF56200E20634 /* VideoPlayerWithOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61C2E3AF55900E20634 /* VideoPlayerWithOverlayView.swift */; };
+		7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */; };
 		7F85E61F2E3B0F3000E20634 /* CameraPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61E2E3B0F2700E20634 /* CameraPreloader.swift */; };
 		7F85E6212E3EC7A100E20634 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */; };
+		7F85E6232E401DF900E20634 /* CreateStitchRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */; };
 		7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */; };
 		7FAEDB142DF535FB00011D8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDB102DF535FB00011D8C /* Assets.xcassets */; };
 		7FAEDB152DF535FB00011D8C /* VideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */; };
 		7FAEDB162DF535FB00011D8C /* TimeFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */; };
 		7FAEDB172DF535FB00011D8C /* HomeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF62DF535FB00011D8C /* HomeListView.swift */; };
 		7FAEDB182DF535FB00011D8C /* HomeListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF72DF535FB00011D8C /* HomeListViewModel.swift */; };
-		7FAEDB192DF535FB00011D8C /* VideoPlayerWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF82DF535FB00011D8C /* VideoPlayerWrapperView.swift */; };
+		7FAEDB192DF535FB00011D8C /* DisplayListVideoPlayerWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF82DF535FB00011D8C /* DisplayListVideoPlayerWrapperView.swift */; };
 		7FAEDB1A2DF535FB00011D8C /* CameraRecorderOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFA2DF535FB00011D8C /* CameraRecorderOverlayView.swift */; };
 		7FAEDB1B2DF535FB00011D8C /* CameraRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFB2DF535FB00011D8C /* CameraRecorderViewController.swift */; };
 		7FAEDB1C2DF535FB00011D8C /* RecordVideoButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAFC2DF535FB00011D8C /* RecordVideoButtonView.swift */; };
@@ -48,6 +47,15 @@
 		7FAEDB282DF535FB00011D8C /* _SecJournalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB0E2DF535FB00011D8C /* _SecJournalApp.swift */; };
 		7FAEDB292DF535FB00011D8C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB112DF535FB00011D8C /* ContentView.swift */; };
 		7FB8FB072E358E3B00B02E97 /* 1SecJournalAppIntents.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 7FB8FAFE2E358E3B00B02E97 /* 1SecJournalAppIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7FD5C8332E5A85E400FD8BBC /* SignInWithAppleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5C8322E5A85DB00FD8BBC /* SignInWithAppleView.swift */; };
+		7FD5C8352E5A865100FD8BBC /* CryptoUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5C8342E5A864D00FD8BBC /* CryptoUtilities.swift */; };
+		7FD5C83A2E5BB40100FD8BBC /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C8392E5BB40100FD8BBC /* Auth */; };
+		7FD5C83C2E5BB40100FD8BBC /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C83B2E5BB40100FD8BBC /* Functions */; };
+		7FD5C83E2E5BB40100FD8BBC /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C83D2E5BB40100FD8BBC /* PostgREST */; };
+		7FD5C8402E5BB40100FD8BBC /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C83F2E5BB40100FD8BBC /* Realtime */; };
+		7FD5C8422E5BB40100FD8BBC /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C8412E5BB40100FD8BBC /* Storage */; };
+		7FD5C8442E5BB40100FD8BBC /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C8432E5BB40100FD8BBC /* Supabase */; };
+		7FD5C8462E5BB44400FD8BBC /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5C8452E5BB43D00FD8BBC /* SupabaseManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,15 +113,16 @@
 		7F85E6162E39AC9A00E20634 /* VideoRecorderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderViewModel.swift; sourceTree = "<group>"; };
 		7F85E6182E3AF1E300E20634 /* VideoCreationRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCreationRootView.swift; sourceTree = "<group>"; };
 		7F85E61A2E3AF23900E20634 /* VideoCreationRootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCreationRootViewModel.swift; sourceTree = "<group>"; };
-		7F85E61C2E3AF55900E20634 /* VideoPlayerWithOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerWithOverlayView.swift; sourceTree = "<group>"; };
+		7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerWithDiscardOverlayView.swift; sourceTree = "<group>"; };
 		7F85E61E2E3B0F2700E20634 /* CameraPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreloader.swift; sourceTree = "<group>"; };
 		7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
+		7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStitchRootView.swift; sourceTree = "<group>"; };
 		7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEntry.swift; sourceTree = "<group>"; };
 		7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
 		7FAEDAF62DF535FB00011D8C /* HomeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeListView.swift; sourceTree = "<group>"; };
 		7FAEDAF72DF535FB00011D8C /* HomeListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeListViewModel.swift; sourceTree = "<group>"; };
-		7FAEDAF82DF535FB00011D8C /* VideoPlayerWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerWrapperView.swift; sourceTree = "<group>"; };
+		7FAEDAF82DF535FB00011D8C /* DisplayListVideoPlayerWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayListVideoPlayerWrapperView.swift; sourceTree = "<group>"; };
 		7FAEDAFA2DF535FB00011D8C /* CameraRecorderOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecorderOverlayView.swift; sourceTree = "<group>"; };
 		7FAEDAFB2DF535FB00011D8C /* CameraRecorderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraRecorderViewController.swift; sourceTree = "<group>"; };
 		7FAEDAFC2DF535FB00011D8C /* RecordVideoButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVideoButtonView.swift; sourceTree = "<group>"; };
@@ -134,6 +143,9 @@
 		7FAEDB112DF535FB00011D8C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7FB668542D879FF800BD72D9 /* 1SecJournal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 1SecJournal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FB8FAFE2E358E3B00B02E97 /* 1SecJournalAppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = 1SecJournalAppIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FD5C8322E5A85DB00FD8BBC /* SignInWithAppleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleView.swift; sourceTree = "<group>"; };
+		7FD5C8342E5A864D00FD8BBC /* CryptoUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoUtilities.swift; sourceTree = "<group>"; };
+		7FD5C8452E5BB43D00FD8BBC /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -202,8 +214,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F1D56BD2E0A2685001069D0 /* XCTestDynamicOverlay in Frameworks */,
-				7F1D56BB2E0A2685001069D0 /* IssueReporting in Frameworks */,
+				7FD5C83E2E5BB40100FD8BBC /* PostgREST in Frameworks */,
+				7FD5C83C2E5BB40100FD8BBC /* Functions in Frameworks */,
+				7FD5C8442E5BB40100FD8BBC /* Supabase in Frameworks */,
+				7FD5C83A2E5BB40100FD8BBC /* Auth in Frameworks */,
+				7FD5C8422E5BB40100FD8BBC /* Storage in Frameworks */,
+				7FD5C8402E5BB40100FD8BBC /* Realtime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +272,8 @@
 		7FAEDAF52DF535FB00011D8C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				7FD5C8452E5BB43D00FD8BBC /* SupabaseManager.swift */,
+				7FD5C8342E5A864D00FD8BBC /* CryptoUtilities.swift */,
 				7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */,
 				7F6389362E08CABE00DC8DCF /* VideoFileManager.swift */,
 				7F6389342E08C9E200DC8DCF /* AVManager.swift */,
@@ -270,7 +288,7 @@
 			children = (
 				7FAEDAF72DF535FB00011D8C /* HomeListViewModel.swift */,
 				7FAEDAF62DF535FB00011D8C /* HomeListView.swift */,
-				7FAEDAF82DF535FB00011D8C /* VideoPlayerWrapperView.swift */,
+				7FAEDAF82DF535FB00011D8C /* DisplayListVideoPlayerWrapperView.swift */,
 			);
 			path = HomeListView;
 			sourceTree = "<group>";
@@ -290,6 +308,7 @@
 			isa = PBXGroup;
 			children = (
 				7FAEDAFF2DF535FB00011D8C /* CreateStitchViewModel.swift */,
+				7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */,
 				7FAEDAFE2DF535FB00011D8C /* CreateStitchView.swift */,
 			);
 			path = CreateStitchView;
@@ -311,7 +330,7 @@
 		7FAEDB0A2DF535FB00011D8C /* SharedViews */ = {
 			isa = PBXGroup;
 			children = (
-				7F85E61C2E3AF55900E20634 /* VideoPlayerWithOverlayView.swift */,
+				7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */,
 				7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */,
 				7FAEDB072DF535FB00011D8C /* PillButtonView.swift */,
 				7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */,
@@ -331,6 +350,8 @@
 		7FAEDB0D2DF535FB00011D8C /* View */ = {
 			isa = PBXGroup;
 			children = (
+				7FD5C8312E5A85D200FD8BBC /* SignInWithApple */,
+				7FAEDB112DF535FB00011D8C /* ContentView.swift */,
 				7FAEDAF92DF535FB00011D8C /* HomeListView */,
 				7FAEDB052DF535FB00011D8C /* NewVideoPrompt */,
 				7FAEDB0A2DF535FB00011D8C /* SharedViews */,
@@ -349,7 +370,6 @@
 				7FAEDB0E2DF535FB00011D8C /* _SecJournalApp.swift */,
 				7FAEDB0F2DF535FB00011D8C /* 1SecJournal.entitlements */,
 				7FAEDB102DF535FB00011D8C /* Assets.xcassets */,
-				7FAEDB112DF535FB00011D8C /* ContentView.swift */,
 				7F6389242DFF15D400DC8DCF /* VideoJournalIconV3.icon */,
 			);
 			path = 1SecJournal;
@@ -384,6 +404,14 @@
 				7F85E5F72E359B8E00E20634 /* SecJournalWidgetExtensionExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7FD5C8312E5A85D200FD8BBC /* SignInWithApple */ = {
+			isa = PBXGroup;
+			children = (
+				7FD5C8322E5A85DB00FD8BBC /* SignInWithAppleView.swift */,
+			);
+			path = SignInWithApple;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -429,8 +457,12 @@
 			);
 			name = 1SecJournal;
 			packageProductDependencies = (
-				7F1D56BA2E0A2685001069D0 /* IssueReporting */,
-				7F1D56BC2E0A2685001069D0 /* XCTestDynamicOverlay */,
+				7FD5C8392E5BB40100FD8BBC /* Auth */,
+				7FD5C83B2E5BB40100FD8BBC /* Functions */,
+				7FD5C83D2E5BB40100FD8BBC /* PostgREST */,
+				7FD5C83F2E5BB40100FD8BBC /* Realtime */,
+				7FD5C8412E5BB40100FD8BBC /* Storage */,
+				7FD5C8432E5BB40100FD8BBC /* Supabase */,
 			);
 			productName = 1SecJournal;
 			productReference = 7FB668542D879FF800BD72D9 /* 1SecJournal.app */;
@@ -489,7 +521,7 @@
 			mainGroup = 7FB6684B2D879FF800BD72D9;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				7F1D56B62E0A2642001069D0 /* XCRemoteSwiftPackageReference "swift-issue-reporting" */,
+				7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7FB668552D879FF800BD72D9 /* Products */;
@@ -548,7 +580,7 @@
 				7FAEDB182DF535FB00011D8C /* HomeListViewModel.swift in Sources */,
 				7F85E6172E39AC9F00E20634 /* VideoRecorderViewModel.swift in Sources */,
 				7F85E6212E3EC7A100E20634 /* NavigationRouter.swift in Sources */,
-				7FAEDB192DF535FB00011D8C /* VideoPlayerWrapperView.swift in Sources */,
+				7FAEDB192DF535FB00011D8C /* DisplayListVideoPlayerWrapperView.swift in Sources */,
 				7F85E6192E3AF1EE00E20634 /* VideoCreationRootView.swift in Sources */,
 				7FAEDB1A2DF535FB00011D8C /* CameraRecorderOverlayView.swift in Sources */,
 				7FAEDB1B2DF535FB00011D8C /* CameraRecorderViewController.swift in Sources */,
@@ -562,14 +594,18 @@
 				7FAEDB202DF535FB00011D8C /* NewVideoPromptViewModel.swift in Sources */,
 				7FAEDB212DF535FB00011D8C /* VideoPickerView.swift in Sources */,
 				7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */,
+				7FD5C8462E5BB44400FD8BBC /* SupabaseManager.swift in Sources */,
+				7FD5C8352E5A865100FD8BBC /* CryptoUtilities.swift in Sources */,
 				7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */,
 				7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */,
 				7F6389352E08C9E900DC8DCF /* AVManager.swift in Sources */,
 				7F85E61F2E3B0F3000E20634 /* CameraPreloader.swift in Sources */,
 				7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */,
-				7F85E61D2E3AF56200E20634 /* VideoPlayerWithOverlayView.swift in Sources */,
+				7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */,
+				7FD5C8332E5A85E400FD8BBC /* SignInWithAppleView.swift in Sources */,
 				7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */,
 				7F6389272E074B3900DC8DCF /* StitchedVideoEntry.swift in Sources */,
+				7F85E6232E401DF900E20634 /* CreateStitchRootView.swift in Sources */,
 				7F85E61B2E3AF24000E20634 /* VideoCreationRootViewModel.swift in Sources */,
 				7FAEDB272DF535FB00011D8C /* ShareSheet.swift in Sources */,
 				7FAEDB282DF535FB00011D8C /* _SecJournalApp.swift in Sources */,
@@ -957,26 +993,46 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		7F1D56B62E0A2642001069D0 /* XCRemoteSwiftPackageReference "swift-issue-reporting" */ = {
+		7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/swift-issue-reporting";
+			repositoryURL = "https://github.com/supabase-community/supabase-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.2;
+				minimumVersion = 2.5.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7F1D56BA2E0A2685001069D0 /* IssueReporting */ = {
+		7FD5C8392E5BB40100FD8BBC /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7F1D56B62E0A2642001069D0 /* XCRemoteSwiftPackageReference "swift-issue-reporting" */;
-			productName = IssueReporting;
+			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
 		};
-		7F1D56BC2E0A2685001069D0 /* XCTestDynamicOverlay */ = {
+		7FD5C83B2E5BB40100FD8BBC /* Functions */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7F1D56B62E0A2642001069D0 /* XCRemoteSwiftPackageReference "swift-issue-reporting" */;
-			productName = XCTestDynamicOverlay;
+			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Functions;
+		};
+		7FD5C83D2E5BB40100FD8BBC /* PostgREST */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = PostgREST;
+		};
+		7FD5C83F2E5BB40100FD8BBC /* Realtime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Realtime;
+		};
+		7FD5C8412E5BB40100FD8BBC /* Storage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Storage;
+		};
+		7FD5C8432E5BB40100FD8BBC /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

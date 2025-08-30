@@ -15,4 +15,21 @@ class DailyVideoEntry: VideoEntry {
     override init(filename: String, thumbnailFilename: String) {
         super.init(filename: filename, thumbnailFilename: thumbnailFilename)
     }
+    
+
+
 }
+
+//extension DailyVideoEntry: ListDisplayable {
+//    var listDisplayText: String {
+//        date.videoFormattedDisplay
+//    }
+//    
+//    
+//}
+//
+//extension DailyVideoEntry {
+//    var listDisplayText: String {
+//        date.videoFormattedDisplay
+//    }
+//}

@@ -23,80 +23,28 @@ struct HomeListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Picker("Select Video typs", selection: $viewModel.videoListDisplayType) {
-                    ForEach (VideoListDisplayType.allCases, id: \.self) { displayType in
-                        Text(displayType.rawValue)
-                    }
-                }
-                .pickerStyle(.segmented)
+                videoTypePicker()
                 VStack {
-                    // Daily List View. Extract
                         List {
                             if viewModel.videoListDisplayType == .daily {
-
-                            if viewModel.shouldShowTodayPrompt() {
-                                TapToRecordView(text: "Upload a video for today", height: 140)
-                                    .onTapGesture {
-                                        viewModel.uploadTodayVideoCTATapped = true
-                                        viewModel.createPromptType = .recordOnly // consider just going directly to the camera
-                                    }
-                            }
-                            ForEach(viewModel.sectionedVideos, id: \.section) { section, videos in
-                                Section(header: Text(section.title)) {
-                                    ForEach(videos) { video in
-                                        VideoRowCell(
-                                            viewModel: viewModel,
-                                            video: video)
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            tappedVideo = video
-                                        }
-                                    }
-                                }
-                                .listRowInsets(EdgeInsets())
-                                .scrollIndicators(.hidden)
-                            }
-                            .onDelete(perform: deleteItem)
+                                todayCreatePromptView()
+                                dailyListView()
                             } else {
-                                Button {
-                                    router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
-                                } label: {
-                                    Text("Create Stitch")
-                                        .pillButtonStyle(backgroundColor: .secondary)
-                                }
-                                ForEach(viewModel.stitchVideos, id: \.id) { video in
-                                    VideoRowCell(
-                                        viewModel: viewModel,
-                                        video: video)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        tappedVideo = video
-                                    }
-                                }
-                                //                                .onDelete(perform: {
-                                //                                        AppLogger.log("TODO handle stitch delete? Can I just reuse actually??")
-                                //                                })
+                                stitchedListView()
                             }
-//                                .onDelete(perform: {
-//                                        AppLogger.log("TODO handle stitch delete? Can I just reuse actually??")
-//                                })
                     }
                         .listStyle(.plain)
                         .scrollIndicators(.hidden)
                         .navigationDestination(item: $tappedVideo) { video in
-                            VideoPlayerWrapperView(video: video)
+                            DisplayListVideoPlayerWrapperView(video: video)
                         }
+                    
 
                 }
                 Spacer()
                 HStack {
                     Spacer()
                     Button {
-                        // Legacy approach to open a prompt pop up
-                        // viewModel.createPromptType = .recordAndStitch
-                        
-                        // New approach, go straight to the camera
-//                        router.path.append(NavigationRouter.Destination.videoRecorder)
                         router.push(.videoRecorder)
                     } label: {
                         Image(systemName: "plus")
@@ -111,6 +59,26 @@ struct HomeListView: View {
                 
             }
             .padding()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        viewModel.presentingSignInSheet = true
+                    } label: {
+                        Image(systemName: "gearshape")
+
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
+
+                    } label: {
+                        Image(systemName: "folder.badge.plus")
+                    }
+                }
+            }
             .sheet(item: $viewModel.createPromptType)  { createType in
                 // I should change this to pass in the HomeListViewModel rather than the prompt view model
                 NewVideoPromptView(viewModel: viewModel.makeMakePromptViewModel(),
@@ -133,6 +101,10 @@ struct HomeListView: View {
                         SaveButtonView()
                     }
                 }
+            }
+            .sheet(isPresented: $viewModel.presentingSignInSheet)
+            {
+                    SignInWithAppleButtonView()
             }
             .navigationTitle("All Videos")
             
@@ -158,7 +130,6 @@ struct HomeListView: View {
         @Bindable var viewModel: HomeListViewModel
         @EnvironmentObject var router: NavigationRouter
         let video: VideoEntry
-//        @Binding var isSharedSheetPresented: Bool
         
         let thumbnailHeight = 142.0
         let thumbnailWidth = 80.0
@@ -173,7 +144,7 @@ struct HomeListView: View {
                         .clipped()
                         .cornerRadius(8)
                 }
-                Text(video.date.videoFormattedDisplay)
+                Text(video.listDisplayText)
                     .font(.title3)
                     .fontWeight(.semibold)
                     .padding(.leading, 8)
@@ -210,5 +181,67 @@ struct HomeListView: View {
         }
     }
     
+    private func deleteStitchedVideo(at offsets: IndexSet) {
+        for index in offsets {
+            let video = viewModel.stitchVideos[index]
+            viewModel.deleteVideo(video)
+        }
+    }
+    
+    @ViewBuilder
+    func videoTypePicker() -> some View {
+        Picker("Select Video typs", selection: $viewModel.videoListDisplayType) {
+            ForEach (VideoListDisplayType.allCases, id: \.self) { displayType in
+                Text(displayType.rawValue)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+    
+    @ViewBuilder
+    func todayCreatePromptView() -> some View {
+        if viewModel.shouldShowTodayPrompt() {
+            TapToRecordView(text: "Upload a video for today", height: 140)
+                .onTapGesture {
+                    viewModel.uploadTodayVideoCTATapped = true
+                    viewModel.createPromptType = .recordOnly // consider just going directly to the camera
+                }
+        }
+    }
+    
+    @ViewBuilder
+    func dailyListView() -> some View {
+        ForEach(viewModel.sectionedVideos, id: \.section) { section, videos in
+            Section(header: Text(section.title)) {
+                ForEach(videos) { video in
+                    VideoRowCell(
+                        viewModel: viewModel,
+                        video: video)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        tappedVideo = video
+                    }
+                }
+            }
+            .listRowInsets(EdgeInsets())
+            .scrollIndicators(.hidden)
+        }
+        .onDelete(perform: deleteItem)
+    }
 
+    @ViewBuilder
+    func stitchedListView() -> some View {
+        ForEach(viewModel.stitchVideos, id: \.id) { video in
+            VideoRowCell(
+                viewModel: viewModel,
+                video: video)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                tappedVideo = video
+            }
+        }
+        .onDelete(perform: deleteStitchedVideo)
+    }
 }
+
+

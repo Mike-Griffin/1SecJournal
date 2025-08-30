@@ -25,6 +25,8 @@ class CreateStitchViewModel {
     var preselectedVideoIds: [UUID] = []
     var selectedIds: Set<UUID> = []
     var modelContext: ModelContext
+    var createdStitch: StitchedVideoEntry?
+    var stitchVideoUrl: URL?
         
     init(videos: [DailyVideoEntry],
          preselectedVideoId: UUID? = nil,
@@ -43,24 +45,35 @@ class CreateStitchViewModel {
         
         // Detached Task I don't think is great.
         Task.detached(priority: .userInitiated) {
-            await self.combineVideos(selectedVideos)
+//            await self.combineVideos(selectedVideos)
+            let videos = selectedVideos.sorted(by: { $0.date < $1.date })
+            if let outputURL = await AVManager.combineVideos(videos: videos) {
+                let selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
+                self.stitchVideoUrl = outputURL
+                
+                guard let (fileName, thumbnailFileName) = await VideoFileManager.generateVideoFileURLs(url: selectedComposedStitchVideo.url) else {
+                    return
+                }
+
+                let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: videos)
+                self.createdStitch = stitchedVideo // capturing self in this task isnt't great
+            }
         }
     }
     
-    func combineVideos(_ videos: [DailyVideoEntry]) async {
-        let videos = videos.sorted(by: { $0.date < $1.date })
-        if let outputURL = await AVManager.combineVideos(videos: videos) {
-            let selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
-            
-            guard let (fileName, thumbnailFileName) = await VideoFileManager.generateVideoFileURLs(url: selectedComposedStitchVideo.url) else {
-                return
-            }
-
-                    let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: videos)
-                    modelContext.insert(stitchedVideo)
-                    AppLogger.log("Stitch Video inserted in modelContext \(stitchedVideo.id)")
+    func saveCreatedStich() {
+        guard let stitchedVideo = createdStitch else {
+            AppLogger.log("Attempt to save a created stich but there isn't one", level: .error)
+            return
         }
+        self.modelContext.insert(stitchedVideo) // capturing self in this task. Not great
+        AppLogger.log("Stitch Video inserted in modelContext \(stitchedVideo.id)")
+
+
     }
+//    func combineVideos(_ videos: [DailyVideoEntry]) async {
+//
+//    }
     
     func selectVideo(_ video: DailyVideoEntry) {
         if selectedIds.contains(video.id) {
