@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 
-struct  VideoPlayerWithOverlayView: View {
+struct  VideoPlayerWithDiscardOverlayView: View {
     @Binding var videoURL: URL?
     var body: some View {
         ZStack {

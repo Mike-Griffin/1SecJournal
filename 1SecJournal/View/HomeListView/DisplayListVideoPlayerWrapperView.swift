@@ -8,7 +8,7 @@
 import SwiftUI
 import AVKit
 
-struct VideoPlayerWrapperView: View {
+struct DisplayListVideoPlayerWrapperView: View {
     let video: VideoEntry
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
