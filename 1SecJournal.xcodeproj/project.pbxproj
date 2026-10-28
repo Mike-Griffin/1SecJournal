@@ -42,6 +42,7 @@
 		7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */; };
 		7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */; };
 		7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB072DF535FB00011D8C /* PillButtonView.swift */; };
+		7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000004 /* ToastView.swift */; };
 		7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */; };
 		7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */; };
 		7FAEDB272DF535FB00011D8C /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */; };
@@ -126,6 +127,7 @@
 		7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderView.swift; sourceTree = "<group>"; };
 		7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscardButtonView.swift; sourceTree = "<group>"; };
 		7FAEDB072DF535FB00011D8C /* PillButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillButtonView.swift; sourceTree = "<group>"; };
+		7FA1B2C32E9F000100000004 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveButtonView.swift; sourceTree = "<group>"; };
 		7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapToRecordView.swift; sourceTree = "<group>"; };
 		7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
@@ -315,6 +317,7 @@
 				7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */,
 				7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */,
 				7FAEDB072DF535FB00011D8C /* PillButtonView.swift */,
+				7FA1B2C32E9F000100000004 /* ToastView.swift */,
 				7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */,
 				7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */,
 			);
@@ -564,6 +567,7 @@
 				7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */,
 				7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */,
 				7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */,
+				7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */,
 				7F6389352E08C9E900DC8DCF /* AVManager.swift in Sources */,
 				7F85E61F2E3B0F3000E20634 /* CameraPreloader.swift in Sources */,
 				7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */,

@@ -10,6 +10,29 @@ import AVKit
 
 protocol CustomCameraViewControllerDelegate: AnyObject {
     func didFinishRecording(to url: URL)
+    func didRequestClose()
+}
+
+enum CameraError: Error {
+    case permissionDenied
+    case cameraUnavailable
+    case outputUnavailable
+    case failedToStart
+    case timedOut
+    case interrupted
+    case runtime(String)
+
+    var message: String {
+        switch self {
+        case .permissionDenied: return "Camera access is off. Enable it in Settings."
+        case .cameraUnavailable: return "No camera is available on this device."
+        case .outputUnavailable: return "The camera couldn't be set up for recording."
+        case .failedToStart: return "Couldn't start the camera."
+        case .timedOut: return "The camera is taking too long to start."
+        case .interrupted: return "The camera was interrupted."
+        case .runtime(let description): return "Camera error: \(description)"
+        }
+    }
 }
 
 class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
@@ -21,114 +44,220 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     var url: URL?
 
     let previewContainer = UIView()
-    
-    // In your view controller:
 
     let spinner = UIActivityIndicatorView(style: .large)
+    // Lives outside the SwiftUI overlay so it's available while loading and after a failure
+    let closeButton = UIButton(type: .system)
+    private var toastHostingController: UIHostingController<ToastView>?
 
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        // Add spinner to view hierarchy
-//
-//    }
+    // All capture session work happens on this queue, per Apple's guidance
+    private let sessionQueue = DispatchQueue(label: "com.comedichoney.1SecJournal.cameraSession")
+    private static let startTimeout: TimeInterval = 3
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        spinner.center = view.center
+        view.backgroundColor = .black
+        setupSpinner()
+        setupCloseButton()
+        observeSessionNotifications()
+        startWatchdog()
+        checkAuthorizationAndStart()
+    }
+
+    private func setupSpinner() {
+        spinner.color = .white
+        spinner.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(spinner)
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
         spinner.startAnimating()
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.setupCameraSession()
+    }
+
+    private func setupCloseButton() {
+        let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
+        closeButton.setImage(UIImage(systemName: "x.circle", withConfiguration: config), for: .normal)
+        closeButton.tintColor = .white
+        closeButton.accessibilityLabel = "Close"
+        closeButton.addTarget(self, action: #selector(handleCloseTap), for: .touchUpInside)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(closeButton)
+        // Lines up with the header row of CameraRecorderOverlayView
+        NSLayoutConstraint.activate([
+            closeButton.widthAnchor.constraint(equalToConstant: 44),
+            closeButton.heightAnchor.constraint(equalToConstant: 44),
+            closeButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            closeButton.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 22)
+        ])
+    }
+
+    @objc private func handleCloseTap() {
+        sessionQueue.async { [captureSession] in
+            if captureSession.isRunning {
+                captureSession.stopRunning()
+            }
         }
-//        setupCameraSession()
+        delegate?.didRequestClose()
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-//        DispatchQueue.main.async {
-//            layoutOverlay()
-        //}
-    }
-    
-    override func viewDidLayoutSubviews() {
-         // layoutOverlay()
-    }
-    
-    func setupCameraSession() {
-        AppLogger.log("👀 setupCameraSession is beginning \(Date())", level: .verbose)
-//
-//        do {
-//            let session = AVAudioSession.sharedInstance()
-//            try session.setCategory(.playAndRecord, mode: .videoRecording, options: [.defaultToSpeaker])
-//            try session.setActive(true)
-//        } catch {
-//            AppLogger.log("❌ Failed to configure AVAudioSession: \(error)")
-//        }
-//        captureSession.automaticallyConfiguresApplicationAudioSession = false
 
+    // MARK: Session setup
+
+    private func checkAuthorizationAndStart() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            sessionQueue.async { [weak self] in
+                self?.configureAndStartSession()
+            }
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                guard granted else {
+                    DispatchQueue.main.async { self?.showError(.permissionDenied) }
+                    return
+                }
+                self?.sessionQueue.async { self?.configureAndStartSession() }
+            }
+        default:
+            showError(.permissionDenied)
+        }
+    }
+
+    private func configureAndStartSession() {
+        AppLogger.log("👀 configureAndStartSession is beginning \(Date())", level: .verbose)
+        if let error = configureSession() {
+            DispatchQueue.main.async { [weak self] in
+                self?.showError(error)
+            }
+            return
+        }
+
+        let start = Date()
+        captureSession.startRunning()
+        AppLogger.log("⏳ captureSession startRunning took \(Date().timeIntervalSince(start))", level: .verbose)
+
+        let isRunning = captureSession.isRunning
+        DispatchQueue.main.async { [weak self] in
+            if isRunning {
+                self?.showPreview()
+            } else {
+                self?.showError(.failedToStart)
+            }
+        }
+    }
+
+    /// Returns nil on success
+    private func configureSession() -> CameraError? {
         captureSession.beginConfiguration()
-        
-         captureSession.sessionPreset = .high
+        defer { captureSession.commitConfiguration() }
 
-         // Add input
-         guard let device = AVCaptureDevice.default(for: .video),
-               let input = try? AVCaptureDeviceInput(device: device),
-               captureSession.canAddInput(input) else {
-             AppLogger.log("❌ Cannot add camera input")
-             return
-         }
-         captureSession.addInput(input)
-        
-        // Testing commenting out audioInput. In attempt to solve the slow load time
-        
+        captureSession.sessionPreset = .high
+
+        guard let device = AVCaptureDevice.default(for: .video),
+              let input = try? AVCaptureDeviceInput(device: device),
+              captureSession.canAddInput(input) else {
+            AppLogger.log("❌ Cannot add camera input", level: .error)
+            return .cameraUnavailable
+        }
+        captureSession.addInput(input)
+
+        // A video without audio is still worth recording, so a missing microphone isn't an error
         if let audioDevice = AVCaptureDevice.default(for: .audio),
            let audioInput = try? AVCaptureDeviceInput(device: audioDevice),
            captureSession.canAddInput(audioInput) {
             captureSession.addInput(audioInput)
         }
-        
-        AppLogger.log("⏳ captureSession addedInput \(Date())", level: .verbose)
 
-
-         // Add output (after input!)
-         if captureSession.canAddOutput(videoOutput) {
-             captureSession.addOutput(videoOutput)
-             videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(1, preferredTimescale: 600)
-             videoOutput.minFreeDiskSpaceLimit = 1024 * 1024
-         } else {
-             AppLogger.log("❌ Cannot add video output")
-         }
-        
-        AppLogger.log("⏳ captureSession addedOutput \(Date())", level: .verbose)
-
-        
-        captureSession.commitConfiguration()
-        AppLogger.log("⏳ captureSession committedConfiguration \(Date())", level: .verbose)
-
-        DispatchQueue.global().async { [weak self] in
-            // Not needed since I do this at the beginning
-//            try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .videoRecording)
-//            try? AVAudioSession.sharedInstance().setActive(true)
-
-            AppLogger.log("⏳ captureSession startRunning \(Date())", level: .verbose)
-            let now = Date()
-
-            self?.captureSession.startRunning()
-            AppLogger.log("⏳ captureSession startRunning finished at \(Date()) took this long \(Date().timeIntervalSince(now))")
-
-
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                if self?.captureSession.isRunning == true {
-                    self?.spinner.stopAnimating()
-                    self?.spinner.removeFromSuperview()
-                    self?.layoutOverlay()
-                    // Here you could hide a loading indicator, show preview, etc.
-                } else {
-                    AppLogger.log("⌛ Camera not running yet \(Date())", level: .verbose)
-                }
-            }
-
+        guard captureSession.canAddOutput(videoOutput) else {
+            AppLogger.log("❌ Cannot add video output", level: .error)
+            return .outputUnavailable
         }
+        captureSession.addOutput(videoOutput)
+        videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(1, preferredTimescale: 600)
+        videoOutput.minFreeDiskSpaceLimit = 1024 * 1024
+        return nil
+    }
+
+    private func startWatchdog() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.startTimeout) { [weak self] in
+            guard let self, self.previewLayer == nil, self.toastHostingController == nil else { return }
+            self.showError(.timedOut)
+        }
+    }
+
+    // MARK: Session notifications
+
+    private func observeSessionNotifications() {
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(sessionRuntimeError(_:)),
+                           name: .AVCaptureSessionRuntimeError, object: captureSession)
+        center.addObserver(self, selector: #selector(sessionWasInterrupted(_:)),
+                           name: .AVCaptureSessionWasInterrupted, object: captureSession)
+        center.addObserver(self, selector: #selector(sessionInterruptionEnded(_:)),
+                           name: .AVCaptureSessionInterruptionEnded, object: captureSession)
+    }
+
+    @objc private func sessionRuntimeError(_ notification: Notification) {
+        let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError
+        AppLogger.log("❌ Capture session runtime error: \(String(describing: error))", level: .error)
+        DispatchQueue.main.async { [weak self] in
+            self?.showError(.runtime(error?.localizedDescription ?? "Unknown error"))
+        }
+    }
+
+    @objc private func sessionWasInterrupted(_ notification: Notification) {
+        DispatchQueue.main.async { [weak self] in
+            self?.showError(.interrupted)
+        }
+    }
+
+    @objc private func sessionInterruptionEnded(_ notification: Notification) {
+        DispatchQueue.main.async { [weak self] in
+            self?.hideToast()
+        }
+    }
+
+    // MARK: UI state
+
+    private func showPreview() {
+        spinner.stopAnimating()
+        spinner.removeFromSuperview()
+        // Clears a timeout toast if the camera started late
+        hideToast()
+        layoutOverlay()
+    }
+
+    private func showError(_ error: CameraError) {
+        AppLogger.log("Showing camera error: \(error.message)", level: .error)
+        spinner.stopAnimating()
+        spinner.removeFromSuperview()
+        showToast(error.message)
+    }
+
+    private func showToast(_ message: String) {
+        hideToast()
+        let hostingController = UIHostingController(rootView: ToastView(message: message))
+        hostingController.sizingOptions = .intrinsicContentSize
+        hostingController.view.backgroundColor = .clear
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        NSLayoutConstraint.activate([
+            hostingController.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hostingController.view.leadingAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            hostingController.view.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            hostingController.view.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 12)
+        ])
+        hostingController.didMove(toParent: self)
+        toastHostingController = hostingController
+        UIAccessibility.post(notification: .announcement, argument: message)
+    }
+
+    private func hideToast() {
+        guard let hostingController = toastHostingController else { return }
+        hostingController.willMove(toParent: nil)
+        hostingController.view.removeFromSuperview()
+        hostingController.removeFromParent()
+        toastHostingController = nil
     }
 
     func layoutOverlay() {
@@ -148,6 +277,11 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         hostingController.view.backgroundColor = .clear
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
+
+        view.bringSubviewToFront(closeButton)
+        if let toastView = toastHostingController?.view {
+            view.bringSubviewToFront(toastView)
+        }
     }
 
     @objc func handleRecordButtonTap() {
@@ -171,7 +305,7 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         videoOutput.startRecording(to: tempURL, recordingDelegate: self)
         url = tempURL
     }
-    
+
     private func stopRecording() {
         videoOutput.stopRecording()
         guard let url = url else {
@@ -189,4 +323,3 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         dismiss(animated: true)
     }
 }
-

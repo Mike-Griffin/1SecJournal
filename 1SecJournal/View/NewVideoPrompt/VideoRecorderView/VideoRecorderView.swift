@@ -14,6 +14,7 @@ struct VideoRecorderView: UIViewControllerRepresentable {
     // rather than have a binding of just a URL. Pass in the entire viewmodel
     @Binding var videoURL: URL?
     var maxDuration: TimeInterval = 10
+    let onClose: () -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -51,6 +52,10 @@ struct VideoRecorderView: UIViewControllerRepresentable {
                 parent.videoURL = url // I think I want to do something different
                 }
             }
+
+        func didRequestClose() {
+            parent.onClose()
+        }
         }
     
 }
