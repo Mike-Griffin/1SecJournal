@@ -177,10 +177,23 @@ struct HomeListView: View {
                         .clipped()
                         .cornerRadius(8)
                 }
-                Text(video.listDisplayText)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .padding(.leading, 8)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(video.displayTitle ?? video.listDisplayText)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                    if video.displayTitle != nil {
+                        Text(video.listDisplayText)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    if let journalPreview = video.journalPreview {
+                        Text(journalPreview)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+                }
+                .padding(.leading, 8)
                 Spacer()
                 Menu {
                     Button("Stitch to New Video") {

@@ -48,6 +48,8 @@ class CreateStitchViewModel {
     var modelContext: ModelContext
     var creationState: CreationState = .selecting
     var isSaving = false
+    /// Optional, entered on the preview before saving
+    var title = ""
     /// Shown as a toast
     var errorMessage: String?
     /// The videos in the stitch being created, oldest first
@@ -145,6 +147,10 @@ class CreateStitchViewModel {
         let stitchedVideo = StitchedVideoEntry(filename: fileName,
                                                thumbnailFilename: thumbnailFileName,
                                                composingVideos: stitchSources)
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedTitle.isEmpty {
+            stitchedVideo.title = trimmedTitle
+        }
         modelContext.insert(stitchedVideo)
         do {
             try modelContext.save()

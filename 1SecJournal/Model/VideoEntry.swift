@@ -32,6 +32,22 @@ import UIKit
 }
 
 extension VideoEntry {
+    /// The title if it has any text
+    var displayTitle: String? {
+        guard let title = title?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty else { return nil }
+        return title
+    }
+
+    /// The first line of the journal text that has any text
+    var journalPreview: String? {
+        journalText?
+            .split(whereSeparator: \.isNewline)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .first { !$0.isEmpty }
+    }
+}
+
+extension VideoEntry {
     var fileURL: URL {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
             AppLogger.log("invalid containerURL")
