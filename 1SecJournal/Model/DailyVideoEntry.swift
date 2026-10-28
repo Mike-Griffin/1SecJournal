@@ -10,7 +10,7 @@ import Foundation
 @available(iOS 26.0, *)
 @Model
 class DailyVideoEntry: VideoEntry {
-    var stitchedVideos: [StitchedVideoEntry] = []
+    // The stitches a video is part of are found through StitchedVideoEntry.sourceVideoIDs
     
     override init(filename: String, thumbnailFilename: String) {
         super.init(filename: filename, thumbnailFilename: thumbnailFilename)
