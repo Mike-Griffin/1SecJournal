@@ -11,8 +11,6 @@ import SwiftUI
 @main
 struct SecJournalWidgetExtensionBundle: WidgetBundle {
     var body: some Widget {
-        SecJournalWidgetExtension()
         PerformActionButton()
-        SecJournalWidgetExtensionLiveActivity()
     }
 }
