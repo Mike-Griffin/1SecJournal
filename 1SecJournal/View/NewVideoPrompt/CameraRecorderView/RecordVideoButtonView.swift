@@ -46,34 +46,6 @@ struct RecordVideoButtonView: View {
         }
 //        .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height - 200)
     }
-    
-    @ViewBuilder
-    var recordButton: some View {
-        let size = 60.0
-        ZStack {
-            Circle()
-                .fill(.white)
-                .frame(width: size, height: size)
-            Circle()
-                .fill(.red)
-                .frame(width: size - 10, height: size - 10)
-
-        }
-        
-    }
-    
-    @ViewBuilder
-    var stopButton: some View {
-        let size = 60.0
-        ZStack {
-            Circle()
-                .fill(.white)
-                .frame(width: size, height: size)
-            Rectangle()
-                .fill(.red)
-                .frame(width: 25, height: 25)
-        }
-    }
 }
 
 #Preview {

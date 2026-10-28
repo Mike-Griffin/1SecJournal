@@ -253,8 +253,6 @@ struct AVManager {
 //            textLayer.add(fadeOut, forKey: "fadeOut")
 
             parentLayer.addSublayer(textLayer)
-            parentLayer.backgroundColor = UIColor.green.withAlphaComponent(0.1).cgColor
-
         }
 
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(

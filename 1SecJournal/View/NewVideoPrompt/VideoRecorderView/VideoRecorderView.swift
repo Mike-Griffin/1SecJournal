@@ -21,18 +21,7 @@ struct VideoRecorderView: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> CameraRecorderViewController {
-        var controller: CameraRecorderViewController
-        if let recorderVC = CameraPreloader.shared.consumePreloaded() {
-            AppLogger.log("Using preloaded VC")
-            controller = recorderVC
-//            uiViewController.present(recorderVC, animated: true)
-        } else {
-            // fallback if not preloaded
-            AppLogger.log("Constructing new VC")
-
-            controller = CameraRecorderViewController()
-//            uiViewController.present(freshVC, animated: true)
-        }
+        let controller = CameraRecorderViewController()
         controller.delegate = context.coordinator
         controller.maxDuration = maxDuration
         return controller

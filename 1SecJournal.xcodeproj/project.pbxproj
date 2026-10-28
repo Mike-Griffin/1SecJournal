@@ -17,11 +17,9 @@
 		7F85E5F92E359B8E00E20634 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F85E5F82E359B8E00E20634 /* WidgetKit.framework */; };
 		7F85E5FB2E359B8E00E20634 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F85E5FA2E359B8E00E20634 /* SwiftUI.framework */; };
 		7F85E60A2E359B9000E20634 /* SecJournalWidgetExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7F85E5F72E359B8E00E20634 /* SecJournalWidgetExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		7F85E6172E39AC9F00E20634 /* VideoRecorderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6162E39AC9A00E20634 /* VideoRecorderViewModel.swift */; };
 		7F85E6192E3AF1EE00E20634 /* VideoCreationRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6182E3AF1E300E20634 /* VideoCreationRootView.swift */; };
 		7F85E61B2E3AF24000E20634 /* VideoCreationRootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61A2E3AF23900E20634 /* VideoCreationRootViewModel.swift */; };
 		7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */; };
-		7F85E61F2E3B0F3000E20634 /* CameraPreloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61E2E3B0F2700E20634 /* CameraPreloader.swift */; };
 		7F85E6212E3EC7A100E20634 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */; };
 		7F85E6232E401DF900E20634 /* CreateStitchRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */; };
 		7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */; };
@@ -103,11 +101,9 @@
 		7F85E5F72E359B8E00E20634 /* SecJournalWidgetExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SecJournalWidgetExtensionExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F85E5F82E359B8E00E20634 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		7F85E5FA2E359B8E00E20634 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		7F85E6162E39AC9A00E20634 /* VideoRecorderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderViewModel.swift; sourceTree = "<group>"; };
 		7F85E6182E3AF1E300E20634 /* VideoCreationRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCreationRootView.swift; sourceTree = "<group>"; };
 		7F85E61A2E3AF23900E20634 /* VideoCreationRootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCreationRootViewModel.swift; sourceTree = "<group>"; };
 		7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerWithDiscardOverlayView.swift; sourceTree = "<group>"; };
-		7F85E61E2E3B0F2700E20634 /* CameraPreloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreloader.swift; sourceTree = "<group>"; };
 		7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStitchRootView.swift; sourceTree = "<group>"; };
 		7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEntry.swift; sourceTree = "<group>"; };
@@ -231,7 +227,6 @@
 		7F85E6152E39A20F00E20634 /* VideoRecorderView */ = {
 			isa = PBXGroup;
 			children = (
-				7F85E6162E39AC9A00E20634 /* VideoRecorderViewModel.swift */,
 				7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */,
 			);
 			path = VideoRecorderView;
@@ -280,7 +275,6 @@
 		7FAEDAFD2DF535FB00011D8C /* CameraRecorderView */ = {
 			isa = PBXGroup;
 			children = (
-				7F85E61E2E3B0F2700E20634 /* CameraPreloader.swift */,
 				7FAEDAFB2DF535FB00011D8C /* CameraRecorderViewController.swift */,
 				7FAEDAFA2DF535FB00011D8C /* CameraRecorderOverlayView.swift */,
 				7FAEDAFC2DF535FB00011D8C /* RecordVideoButtonView.swift */,
@@ -549,7 +543,6 @@
 				7FAEDB162DF535FB00011D8C /* TimeFormatter.swift in Sources */,
 				7FAEDB172DF535FB00011D8C /* HomeListView.swift in Sources */,
 				7FAEDB182DF535FB00011D8C /* HomeListViewModel.swift in Sources */,
-				7F85E6172E39AC9F00E20634 /* VideoRecorderViewModel.swift in Sources */,
 				7F85E6212E3EC7A100E20634 /* NavigationRouter.swift in Sources */,
 				7FAEDB192DF535FB00011D8C /* DisplayListVideoPlayerWrapperView.swift in Sources */,
 				7F85E6192E3AF1EE00E20634 /* VideoCreationRootView.swift in Sources */,
@@ -569,7 +562,6 @@
 				7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */,
 				7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */,
 				7F6389352E08C9E900DC8DCF /* AVManager.swift in Sources */,
-				7F85E61F2E3B0F3000E20634 /* CameraPreloader.swift in Sources */,
 				7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */,
 				7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */,
 				7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */,

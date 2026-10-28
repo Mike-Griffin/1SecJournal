@@ -12,20 +12,16 @@ import SwiftData
 
 struct NewVideoPromptView: View {
     @Bindable private var viewModel: NewVideoPromptViewModel
-//    @EnvironmentObject var router: NavigationRouter
-    let showStitch: Bool
     
-    
-    init(viewModel: NewVideoPromptViewModel, showStitch: Bool) {
+    init(viewModel: NewVideoPromptViewModel) {
         self._viewModel = Bindable(wrappedValue: viewModel)
-        self.showStitch = showStitch
     }
 
     var body: some View {
         VStack {
             PromptHeaderView(viewModel: viewModel)
             Spacer()
-            VideoInformationView(viewModel: viewModel, showStitch: showStitch)
+            VideoInformationView(viewModel: viewModel)
                 .padding(.horizontal)
                 .frame(height: 300)
             if viewModel.videoURL != nil {
@@ -34,15 +30,9 @@ struct NewVideoPromptView: View {
             }
             Spacer()
         }
-//        .fullScreenCover(isPresented: $viewModel.showCamera) {
-//            VideoRecorderView(videoURL: $viewModel.videoURL)
-//        }
         .sheet(isPresented: $viewModel.showPhotoLibrary) {
             // TODO: Can remove the photoLibrary type
             VideoPickerView(sourceType: .photoLibrary, videoURL: $viewModel.videoURL)
-        }
-        .sheet(isPresented: $viewModel.showCreateStitch) {
-//            CreateStitchView(viewModel: viewModel.createStitchViewModel())
         }
     }
 
@@ -78,7 +68,6 @@ struct PromptHeaderView: View {
 struct VideoInformationView: View {
     @Bindable var viewModel: NewVideoPromptViewModel
     @EnvironmentObject var router: NavigationRouter // Should I pass this into viewModel
-    let showStitch: Bool
     var body: some View {
         VStack  {
             if let player = viewModel.player {
@@ -131,22 +120,6 @@ struct VideoInformationView: View {
                                 AppLogger.log("Camera not available")
                             }
                         }
-                    if showStitch {
-                        Button {
-                            viewModel.showCreateStitch = true
-                        } label: {
-                            ZStack {
-                                Text("Create Stitch")
-                                    .tint(.primary)
-                                Capsule()
-                                    .fill(Color.gray.opacity(0.2))
-                                
-                            }
-                            .padding()
-                            .frame(width: 260, height: 80)
-                            
-                        }
-                    }
                 }
             }
         }

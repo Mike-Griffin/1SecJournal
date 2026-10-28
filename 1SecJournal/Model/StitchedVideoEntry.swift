@@ -30,8 +30,3 @@ class StitchedVideoEntry: VideoEntry {
        return "\(firstVideoDate.videoFormattedDisplay) - \(lastVideoDate.videoFormattedDisplay)"
    }
 }
-
-//extension StitchedVideoEntry {
-//
-//
-//}

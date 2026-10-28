@@ -40,12 +40,10 @@ struct VideoSection: Hashable, Equatable, Comparable {
 
 enum CreatePromptType: Identifiable {
     case recordOnly
-    case recordAndStitch
 
     var id: String {
         switch self {
         case .recordOnly: return "record"
-        case .recordAndStitch: return "stitch"
         }
     }
 }
@@ -85,10 +83,6 @@ enum VideoListDisplayType: String, CaseIterable {
     // Prompt Management
     var createPromptType: CreatePromptType?
     var uploadTodayVideoCTATapped: Bool = false
-    
-    // Create a stitch of videos
-    //var stichVideoUrl: SelectedIdentifiableURL?
-    var selectedComposedStitchVideo: ComposedStitchVideo?
     
     var modelContext: ModelContext
     
@@ -165,27 +159,6 @@ enum VideoListDisplayType: String, CaseIterable {
     }
 
     
-    private func getThumbnail(from videoURL: URL) async -> UIImage? {
-            let asset = AVURLAsset(url: videoURL)
-            let imageGenerator = AVAssetImageGenerator(asset: asset)
-            imageGenerator.appliesPreferredTrackTransform = true
-
-            let time = CMTime(seconds: 1, preferredTimescale: 600) // 1 second into video
-            do {
-                // It's possible I'm not throwing the error properly, but I think it should be
-                return try await withCheckedThrowingContinuation { continuation in
-                    imageGenerator.generateCGImageAsynchronously(for: time) { cgImage,_,_  in         if let cgImage = cgImage {
-                            continuation.resume(returning: UIImage(cgImage: cgImage))
-                        }
-                    }
-                }
-            } catch {
-                reportIssue("Failed to generate thumbnail: \(error)")
-                return nil
-            }
-        
-    }
-    
     func setShareURL(_ video: VideoEntry) {
         let tempDirectory = FileManager.default.temporaryDirectory
         let formatter = DateFormatter()
@@ -208,42 +181,14 @@ enum VideoListDisplayType: String, CaseIterable {
         modelContext.delete(video)
     }
     
-    // This should be refactored to two different functions. But for now this works
-    func saveVideo(url: URL, dailyVideos: [DailyVideoEntry]?) async {
+    func saveVideo(url: URL) async {
         guard let (fileName, thumbnailFileName) = await VideoFileManager.generateVideoFileURLs(url: url) else {
             return
         }
-
-            if let dailyVideos = dailyVideos {
-                let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: dailyVideos)
-                modelContext.insert(stitchedVideo)
-                AppLogger.log("Stitch Video inserted in modelContext \(stitchedVideo.id)")
-
-            } else {
-                let newVideo = DailyVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName)
-                videos.append(newVideo)
-                modelContext.insert(newVideo)
-                groupVideos()
-            }
-                
-
-        
-
-    }
-    
-    func saveStitchSelection() async {
-        guard let stitchSelection = selectedComposedStitchVideo else {
-            return
-        }
-        await saveVideo(url: stitchSelection.url, dailyVideos: stitchSelection.dailyVideos)
-    }
-    
-    // MARK: Combine Stitch Videos to create a new one
-    func combineVideos(_ videos: [DailyVideoEntry]) async {
-        let videos = videos.sorted(by: { $0.date < $1.date })
-        if let outputURL = await AVManager.combineVideos(videos: videos) {
-            selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
-        }
+        let newVideo = DailyVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName)
+        videos.append(newVideo)
+        modelContext.insert(newVideo)
+        groupVideos()
     }
 
     
@@ -260,19 +205,12 @@ enum VideoListDisplayType: String, CaseIterable {
 
     
     func makeMakePromptViewModel() -> NewVideoPromptViewModel {
-        return NewVideoPromptViewModel(videos: videos){ [weak self] in
+        return NewVideoPromptViewModel { [weak self] in
             self?.createPromptType = nil
         } onSave: { [weak self] url in
             Task {
-               await self?.saveVideo(url: url, dailyVideos: nil)
-            }
-        } onSelectedStitchVideos: { [weak self] selectedStitchVideos in
-            // create a new video that combines the videos
-            // set this url into a new value
-            Task.detached(priority: .userInitiated) {
-                await self?.combineVideos(selectedStitchVideos)
+               await self?.saveVideo(url: url)
             }
         }
-        
     }
 }

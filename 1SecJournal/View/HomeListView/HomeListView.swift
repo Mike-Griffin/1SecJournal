@@ -70,28 +70,15 @@ struct HomeListView: View {
                     }
                 }
             }
-            .sheet(item: $viewModel.createPromptType)  { createType in
+            .sheet(item: $viewModel.createPromptType)  { _ in
                 // I should change this to pass in the HomeListViewModel rather than the prompt view model
-                NewVideoPromptView(viewModel: viewModel.makeMakePromptViewModel(),
-                                   showStitch: createType == .recordAndStitch)
+                NewVideoPromptView(viewModel: viewModel.makeMakePromptViewModel())
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
                     .presentationContentInteraction(.resizes)
             }
             .sheet(item: $viewModel.selectedShareURL) { video in
                 ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
-            }
-            .sheet(item: $viewModel.selectedComposedStitchVideo) { stitchVideo in
-                VStack {
-                    VideoPlayer(player: AVPlayer(url: stitchVideo.url))
-                    Button {
-                        Task {
-                            await viewModel.saveStitchSelection()
-                        }
-                    } label: {
-                        SaveButtonView()
-                    }
-                }
             }
             .navigationTitle("All Videos")
             
