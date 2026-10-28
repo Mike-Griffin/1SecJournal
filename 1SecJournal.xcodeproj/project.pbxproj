@@ -23,6 +23,8 @@
 		7F85E6232E401DF900E20634 /* CreateStitchRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */; };
 		7FA1B2C32E9F000100000001 /* IssueReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 7FA1B2C32E9F000100000003 /* IssueReporting */; };
 		7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000004 /* ToastView.swift */; };
+		7FA1B2C32E9F000100000007 /* VideoPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000006 /* VideoPeriod.swift */; };
+		7FA1B2C32E9F000100000009 /* ThumbnailStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000008 /* ThumbnailStackView.swift */; };
 		7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */; };
 		7FAEDB142DF535FB00011D8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDB102DF535FB00011D8C /* Assets.xcassets */; };
 		7FAEDB152DF535FB00011D8C /* VideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */; };
@@ -107,6 +109,8 @@
 		7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStitchRootView.swift; sourceTree = "<group>"; };
 		7FA1B2C32E9F000100000004 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		7FA1B2C32E9F000100000006 /* VideoPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPeriod.swift; sourceTree = "<group>"; };
+		7FA1B2C32E9F000100000008 /* ThumbnailStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailStackView.swift; sourceTree = "<group>"; };
 		7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEntry.swift; sourceTree = "<group>"; };
 		7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
@@ -258,6 +262,7 @@
 				7F6389342E08C9E200DC8DCF /* AVManager.swift */,
 				7F6389312E08B87300DC8DCF /* Logger.swift */,
 				7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */,
+				7FA1B2C32E9F000100000006 /* VideoPeriod.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -312,6 +317,7 @@
 				7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */,
 				7FAEDB072DF535FB00011D8C /* PillButtonView.swift */,
 				7FA1B2C32E9F000100000004 /* ToastView.swift */,
+				7FA1B2C32E9F000100000008 /* ThumbnailStackView.swift */,
 				7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */,
 				7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */,
 			);
@@ -561,6 +567,8 @@
 				7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */,
 				7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */,
 				7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */,
+				7FA1B2C32E9F000100000007 /* VideoPeriod.swift in Sources */,
+				7FA1B2C32E9F000100000009 /* ThumbnailStackView.swift in Sources */,
 				7F6389352E08C9E900DC8DCF /* AVManager.swift in Sources */,
 				7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */,
 				7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */,

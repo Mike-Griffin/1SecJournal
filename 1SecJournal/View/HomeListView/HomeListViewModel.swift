@@ -139,26 +139,18 @@ enum VideoListDisplayType: String, CaseIterable {
         var groupedVideos: [VideoSection: [DailyVideoEntry]] = [:]
 
         let calendar = Calendar.current
-        let formatter = DateFormatter()
 
         for video in videos {
-            let videoDate = video.date
-
-            var section: VideoSection
+            let section: VideoSection
             if calendar.isDateInToday(video.date) {
                 section = VideoSection(type: .today, sortDate: calendar.startOfDay(for: video.date))
-            } else if calendar.component(.year, from: video.date) == calendar.component(.year, from: Date()) {
+            } else if calendar.isDate(video.date, equalTo: Date(), toGranularity: .year) {
                 // use the month as the display if it's this year
-                let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: videoDate))!
-                formatter.dateFormat = "MMMM"
-                let monthName = formatter.monthSymbols[calendar.component(.month, from: videoDate) - 1]
-
-                section = VideoSection(type: .month(monthName), sortDate: startOfMonth)
+                let month = VideoPeriod(.month, containing: video.date)
+                section = VideoSection(type: .month(month.monthName), sortDate: month.start)
             } else {
-                let startOfYear = calendar.date(from: DateComponents(year: calendar.component(.year, from: videoDate)))!
-
-                formatter.dateFormat = "MMMM yy"
-                section = VideoSection(type: .year(formatter.string(from: video.date)), sortDate: startOfYear)
+                let year = VideoPeriod(.year, containing: video.date)
+                section = VideoSection(type: .year(year.title), sortDate: year.start)
             }
             groupedVideos[section, default: []].append(video)
         }
