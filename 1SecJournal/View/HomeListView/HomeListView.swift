@@ -11,7 +11,6 @@ import IssueReporting
 
 struct HomeListView: View {
     @Bindable var viewModel: HomeListViewModel
-    @State private var tappedVideo: VideoEntry? = nil
     @EnvironmentObject private var router: NavigationRouter
         
     @Environment(\.scenePhase) private var scenePhase
@@ -34,9 +33,6 @@ struct HomeListView: View {
                 }
                     .listStyle(.plain)
                     .scrollIndicators(.hidden)
-                    .navigationDestination(item: $tappedVideo) { video in
-                        DisplayListVideoPlayerWrapperView(video: video)
-                    }
                 
 
             }
@@ -89,6 +85,25 @@ struct HomeListView: View {
         }
         .sheet(item: $viewModel.selectedShareURL) { video in
             ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
+        }
+        .confirmationDialog(
+            viewModel.pendingDeletion?.video is StitchedVideoEntry ? "Delete this stitch?" : "Delete this video?",
+            isPresented: Binding(
+                get: { viewModel.pendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        viewModel.pendingDeletion = nil
+                    }
+                }
+            ),
+            titleVisibility: .visible,
+            presenting: viewModel.pendingDeletion
+        ) { deletion in
+            Button("Delete", role: .destructive) {
+                viewModel.confirmDelete(deletion)
+            }
+        } message: { deletion in
+            Text(deletion.message)
         }
         .sheet(item: $viewModel.backupShareURL) { backup in
             ShareSheet(activityItems: [backup.url])
@@ -174,7 +189,7 @@ struct HomeListView: View {
                         viewModel.setShareURL(video)
                     }
                     Button("Delete", role: .destructive) {
-                        viewModel.deleteVideo(video)
+                        viewModel.requestDelete(video)
                     }
                 } label: {
                     Image(systemName: "ellipsis")
@@ -189,17 +204,11 @@ struct HomeListView: View {
         }
     }
     
-    private func deleteItem(at offsets: IndexSet) {
-        for index in offsets {
-            let video = viewModel.videos[index]
-            viewModel.deleteVideo(video)
-        }
-    }
-    
-    private func deleteStitchedVideo(at offsets: IndexSet) {
-        for index in offsets {
-            let video = viewModel.stitchVideos[index]
-            viewModel.deleteVideo(video)
+    private func openDetail(_ video: VideoEntry) {
+        if video is StitchedVideoEntry {
+            router.push(.stitchDetail(video.id))
+        } else {
+            router.push(.videoDetail(video.id))
         }
     }
     
@@ -234,14 +243,19 @@ struct HomeListView: View {
                         video: video)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        tappedVideo = video
+                        openDetail(video)
+                    }
+                }
+                // Per section, so the offsets index into this section's videos
+                .onDelete { offsets in
+                    if let index = offsets.first {
+                        viewModel.requestDelete(videos[index])
                     }
                 }
             }
             .listRowInsets(EdgeInsets())
             .scrollIndicators(.hidden)
         }
-        .onDelete(perform: deleteItem)
     }
 
     @ViewBuilder
@@ -252,10 +266,14 @@ struct HomeListView: View {
                 video: video)
             .contentShape(Rectangle())
             .onTapGesture {
-                tappedVideo = video
+                openDetail(video)
             }
         }
-        .onDelete(perform: deleteStitchedVideo)
+        .onDelete { offsets in
+            if let index = offsets.first {
+                viewModel.requestDelete(viewModel.stitchVideos[index])
+            }
+        }
     }
 }
 
