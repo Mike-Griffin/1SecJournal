@@ -38,23 +38,11 @@ struct ContentView: View {
                     Task { @MainActor in
                         AppLogger.log("Setting pending destination")
                         router.push(.videoRecorder)
-//                        router.path.append(NavigationRouter.Destination.videoRecorder)
-
-                        // Tried this but doesn't seem to work, seems like this can happen after didAppear
-//                        router.pendingDestination = NavigationRouter.Destination.videoRecorder
                     }
                 }
                 .onAppear {
-                    CameraPreloader.shared.preload()
-//                    AppLogger.log("HomeListView did appear")
-//                    if let pendingDestination = router.pendingDestination {
-//                        Task { @MainActor in
-//                            AppLogger.log("Append to router")
-//                            router.path.append(pendingDestination)
-//                            router.pendingDestination = nil
-//
-//                        }
-//                    }
+                    // TODO: This doesn't seem to be helping
+                    // CameraPreloader.shared.preload()
                 }
         }
         .environmentObject(router)
@@ -64,7 +52,6 @@ struct ContentView: View {
     func handleLaunchDestination() async {
         if launchDestination == "videoRecorder" {
             router.push(.videoRecorder)
-//            router.path.append(NavigationRouter.Destination.videoRecorder)
             launchDestination = nil
         }
     }
