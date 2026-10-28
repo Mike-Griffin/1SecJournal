@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7FA1B2C32E9F000100000001 /* IssueReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 7FA1B2C32E9F000100000003 /* IssueReporting */; };
 		7F6389252DFF15D400DC8DCF /* VideoJournalIconV3.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7F6389242DFF15D400DC8DCF /* VideoJournalIconV3.icon */; };
 		7F6389272E074B3900DC8DCF /* StitchedVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389262E074B3300DC8DCF /* StitchedVideoEntry.swift */; };
 		7F6389292E074B4C00DC8DCF /* DailyVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389282E074B4500DC8DCF /* DailyVideoEntry.swift */; };
@@ -22,6 +21,8 @@
 		7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */; };
 		7F85E6212E3EC7A100E20634 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */; };
 		7F85E6232E401DF900E20634 /* CreateStitchRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */; };
+		7FA1B2C32E9F000100000001 /* IssueReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 7FA1B2C32E9F000100000003 /* IssueReporting */; };
+		7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000004 /* ToastView.swift */; };
 		7FAEDB132DF535FB00011D8C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */; };
 		7FAEDB142DF535FB00011D8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FAEDB102DF535FB00011D8C /* Assets.xcassets */; };
 		7FAEDB152DF535FB00011D8C /* VideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */; };
@@ -40,7 +41,6 @@
 		7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */; };
 		7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */; };
 		7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB072DF535FB00011D8C /* PillButtonView.swift */; };
-		7FA1B2C32E9F000100000005 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000004 /* ToastView.swift */; };
 		7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */; };
 		7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */; };
 		7FAEDB272DF535FB00011D8C /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */; };
@@ -106,6 +106,7 @@
 		7F85E61C2E3AF55900E20634 /* VideoPlayerWithDiscardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerWithDiscardOverlayView.swift; sourceTree = "<group>"; };
 		7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		7F85E6222E401DF100E20634 /* CreateStitchRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStitchRootView.swift; sourceTree = "<group>"; };
+		7FA1B2C32E9F000100000004 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		7FAEDAF02DF535FB00011D8C /* VideoEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEntry.swift; sourceTree = "<group>"; };
 		7FAEDAF22DF535FB00011D8C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7FAEDAF42DF535FB00011D8C /* TimeFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatter.swift; sourceTree = "<group>"; };
@@ -123,7 +124,6 @@
 		7FAEDB042DF535FB00011D8C /* VideoRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRecorderView.swift; sourceTree = "<group>"; };
 		7FAEDB062DF535FB00011D8C /* DiscardButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscardButtonView.swift; sourceTree = "<group>"; };
 		7FAEDB072DF535FB00011D8C /* PillButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PillButtonView.swift; sourceTree = "<group>"; };
-		7FA1B2C32E9F000100000004 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		7FAEDB082DF535FB00011D8C /* SaveButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveButtonView.swift; sourceTree = "<group>"; };
 		7FAEDB092DF535FB00011D8C /* TapToRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapToRecordView.swift; sourceTree = "<group>"; };
 		7FAEDB0B2DF535FB00011D8C /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
