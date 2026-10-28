@@ -74,6 +74,12 @@ enum VideoListDisplayType: String, CaseIterable {
     // Share Sheet
     var selectedShareURL: SelectedIdentifiableURL?
     
+    // Backup
+    var isPreparingBackup = false
+    var backupShareURL: SelectedIdentifiableURL?
+    /// Shown as a toast
+    var errorMessage: String?
+    
     // Prompt Management
     var createPromptType: CreatePromptType?
     var uploadTodayVideoCTATapped: Bool = false
@@ -178,6 +184,28 @@ enum VideoListDisplayType: String, CaseIterable {
         } catch {
             reportIssue(error, "Failed to copy file for sharing:")
          }
+    }
+    
+    func exportBackup() {
+        guard !isPreparingBackup else { return }
+        isPreparingBackup = true
+        // Writes pending changes so the store on disk is current
+        do {
+            try modelContext.save()
+        } catch {
+            AppLogger.log("Failed to save before backup: \(error)", level: .error)
+        }
+        Task {
+            defer { isPreparingBackup = false }
+            do {
+                let url = try await BackupExporter.makeBackup()
+                AppLogger.log("Backup created at \(url)")
+                backupShareURL = SelectedIdentifiableURL(url: url)
+            } catch {
+                AppLogger.log("Backup failed: \(error)", level: .error)
+                errorMessage = "Couldn't create the backup. \(error.localizedDescription)"
+            }
+        }
     }
     
     func deleteVideo(_ video: VideoEntry) {
