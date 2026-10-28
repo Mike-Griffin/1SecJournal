@@ -61,15 +61,6 @@ struct HomeListView: View {
             .padding()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        viewModel.presentingSignInSheet = true
-                    } label: {
-                        Image(systemName: "gearshape")
-
-                    }
-                }
-                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
@@ -101,10 +92,6 @@ struct HomeListView: View {
                         SaveButtonView()
                     }
                 }
-            }
-            .sheet(isPresented: $viewModel.presentingSignInSheet)
-            {
-                    SignInWithAppleButtonView()
             }
             .navigationTitle("All Videos")
             

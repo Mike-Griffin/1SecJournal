@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7FA1B2C32E9F000100000001 /* IssueReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 7FA1B2C32E9F000100000003 /* IssueReporting */; };
 		7F6389252DFF15D400DC8DCF /* VideoJournalIconV3.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7F6389242DFF15D400DC8DCF /* VideoJournalIconV3.icon */; };
 		7F6389272E074B3900DC8DCF /* StitchedVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389262E074B3300DC8DCF /* StitchedVideoEntry.swift */; };
 		7F6389292E074B4C00DC8DCF /* DailyVideoEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6389282E074B4500DC8DCF /* DailyVideoEntry.swift */; };
@@ -47,15 +48,6 @@
 		7FAEDB282DF535FB00011D8C /* _SecJournalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB0E2DF535FB00011D8C /* _SecJournalApp.swift */; };
 		7FAEDB292DF535FB00011D8C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAEDB112DF535FB00011D8C /* ContentView.swift */; };
 		7FB8FB072E358E3B00B02E97 /* 1SecJournalAppIntents.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 7FB8FAFE2E358E3B00B02E97 /* 1SecJournalAppIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		7FD5C8332E5A85E400FD8BBC /* SignInWithAppleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5C8322E5A85DB00FD8BBC /* SignInWithAppleView.swift */; };
-		7FD5C8352E5A865100FD8BBC /* CryptoUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5C8342E5A864D00FD8BBC /* CryptoUtilities.swift */; };
-		7FD5C83A2E5BB40100FD8BBC /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C8392E5BB40100FD8BBC /* Auth */; };
-		7FD5C83C2E5BB40100FD8BBC /* Functions in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C83B2E5BB40100FD8BBC /* Functions */; };
-		7FD5C83E2E5BB40100FD8BBC /* PostgREST in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C83D2E5BB40100FD8BBC /* PostgREST */; };
-		7FD5C8402E5BB40100FD8BBC /* Realtime in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C83F2E5BB40100FD8BBC /* Realtime */; };
-		7FD5C8422E5BB40100FD8BBC /* Storage in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C8412E5BB40100FD8BBC /* Storage */; };
-		7FD5C8442E5BB40100FD8BBC /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 7FD5C8432E5BB40100FD8BBC /* Supabase */; };
-		7FD5C8462E5BB44400FD8BBC /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FD5C8452E5BB43D00FD8BBC /* SupabaseManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,9 +135,6 @@
 		7FAEDB112DF535FB00011D8C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7FB668542D879FF800BD72D9 /* 1SecJournal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 1SecJournal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FB8FAFE2E358E3B00B02E97 /* 1SecJournalAppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = 1SecJournalAppIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		7FD5C8322E5A85DB00FD8BBC /* SignInWithAppleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleView.swift; sourceTree = "<group>"; };
-		7FD5C8342E5A864D00FD8BBC /* CryptoUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoUtilities.swift; sourceTree = "<group>"; };
-		7FD5C8452E5BB43D00FD8BBC /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -214,12 +203,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FD5C83E2E5BB40100FD8BBC /* PostgREST in Frameworks */,
-				7FD5C83C2E5BB40100FD8BBC /* Functions in Frameworks */,
-				7FD5C8442E5BB40100FD8BBC /* Supabase in Frameworks */,
-				7FD5C83A2E5BB40100FD8BBC /* Auth in Frameworks */,
-				7FD5C8422E5BB40100FD8BBC /* Storage in Frameworks */,
-				7FD5C8402E5BB40100FD8BBC /* Realtime in Frameworks */,
+				7FA1B2C32E9F000100000001 /* IssueReporting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,8 +256,6 @@
 		7FAEDAF52DF535FB00011D8C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				7FD5C8452E5BB43D00FD8BBC /* SupabaseManager.swift */,
-				7FD5C8342E5A864D00FD8BBC /* CryptoUtilities.swift */,
 				7F85E6202E3EC79E00E20634 /* NavigationRouter.swift */,
 				7F6389362E08CABE00DC8DCF /* VideoFileManager.swift */,
 				7F6389342E08C9E200DC8DCF /* AVManager.swift */,
@@ -350,7 +332,6 @@
 		7FAEDB0D2DF535FB00011D8C /* View */ = {
 			isa = PBXGroup;
 			children = (
-				7FD5C8312E5A85D200FD8BBC /* SignInWithApple */,
 				7FAEDB112DF535FB00011D8C /* ContentView.swift */,
 				7FAEDAF92DF535FB00011D8C /* HomeListView */,
 				7FAEDB052DF535FB00011D8C /* NewVideoPrompt */,
@@ -406,14 +387,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7FD5C8312E5A85D200FD8BBC /* SignInWithApple */ = {
-			isa = PBXGroup;
-			children = (
-				7FD5C8322E5A85DB00FD8BBC /* SignInWithAppleView.swift */,
-			);
-			path = SignInWithApple;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -457,12 +430,7 @@
 			);
 			name = 1SecJournal;
 			packageProductDependencies = (
-				7FD5C8392E5BB40100FD8BBC /* Auth */,
-				7FD5C83B2E5BB40100FD8BBC /* Functions */,
-				7FD5C83D2E5BB40100FD8BBC /* PostgREST */,
-				7FD5C83F2E5BB40100FD8BBC /* Realtime */,
-				7FD5C8412E5BB40100FD8BBC /* Storage */,
-				7FD5C8432E5BB40100FD8BBC /* Supabase */,
+				7FA1B2C32E9F000100000003 /* IssueReporting */,
 			);
 			productName = 1SecJournal;
 			productReference = 7FB668542D879FF800BD72D9 /* 1SecJournal.app */;
@@ -521,7 +489,7 @@
 			mainGroup = 7FB6684B2D879FF800BD72D9;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				7FA1B2C32E9F000100000002 /* XCRemoteSwiftPackageReference "xctest-dynamic-overlay" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7FB668552D879FF800BD72D9 /* Products */;
@@ -594,15 +562,12 @@
 				7FAEDB202DF535FB00011D8C /* NewVideoPromptViewModel.swift in Sources */,
 				7FAEDB212DF535FB00011D8C /* VideoPickerView.swift in Sources */,
 				7FAEDB222DF535FB00011D8C /* VideoRecorderView.swift in Sources */,
-				7FD5C8462E5BB44400FD8BBC /* SupabaseManager.swift in Sources */,
-				7FD5C8352E5A865100FD8BBC /* CryptoUtilities.swift in Sources */,
 				7FAEDB232DF535FB00011D8C /* DiscardButtonView.swift in Sources */,
 				7FAEDB242DF535FB00011D8C /* PillButtonView.swift in Sources */,
 				7F6389352E08C9E900DC8DCF /* AVManager.swift in Sources */,
 				7F85E61F2E3B0F3000E20634 /* CameraPreloader.swift in Sources */,
 				7FAEDB252DF535FB00011D8C /* SaveButtonView.swift in Sources */,
 				7F85E61D2E3AF56200E20634 /* VideoPlayerWithDiscardOverlayView.swift in Sources */,
-				7FD5C8332E5A85E400FD8BBC /* SignInWithAppleView.swift in Sources */,
 				7FAEDB262DF535FB00011D8C /* TapToRecordView.swift in Sources */,
 				7F6389272E074B3900DC8DCF /* StitchedVideoEntry.swift in Sources */,
 				7F85E6232E401DF900E20634 /* CreateStitchRootView.swift in Sources */,
@@ -993,46 +958,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+		7FA1B2C32E9F000100000002 /* XCRemoteSwiftPackageReference "xctest-dynamic-overlay" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase-community/supabase-swift";
+			repositoryURL = "https://github.com/pointfreeco/xctest-dynamic-overlay";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.1;
+				minimumVersion = 1.5.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7FD5C8392E5BB40100FD8BBC /* Auth */ = {
+		7FA1B2C32E9F000100000003 /* IssueReporting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Auth;
-		};
-		7FD5C83B2E5BB40100FD8BBC /* Functions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Functions;
-		};
-		7FD5C83D2E5BB40100FD8BBC /* PostgREST */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = PostgREST;
-		};
-		7FD5C83F2E5BB40100FD8BBC /* Realtime */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Realtime;
-		};
-		7FD5C8412E5BB40100FD8BBC /* Storage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Storage;
-		};
-		7FD5C8432E5BB40100FD8BBC /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7FD5C8382E5BB40100FD8BBC /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
+			package = 7FA1B2C32E9F000100000002 /* XCRemoteSwiftPackageReference "xctest-dynamic-overlay" */;
+			productName = IssueReporting;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

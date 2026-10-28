@@ -92,8 +92,6 @@ enum VideoListDisplayType: String, CaseIterable {
     
     var modelContext: ModelContext
     
-    var presentingSignInSheet = false
-    
     init(_ modelContext: ModelContext) {
         self.modelContext = modelContext
         handleFetchAndGroupVideos()
