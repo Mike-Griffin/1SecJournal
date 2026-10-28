@@ -83,6 +83,7 @@ enum VideoListDisplayType: String, CaseIterable {
     // Prompt Management
     var createPromptType: CreatePromptType?
     var uploadTodayVideoCTATapped: Bool = false
+    @ObservationIgnored private var lastGroupedDate = Date()
     
     var modelContext: ModelContext
     
@@ -92,8 +93,15 @@ enum VideoListDisplayType: String, CaseIterable {
         fetchStitchVideos()
     }
     
-    func handleEnterForeground() {
-        handleFetchAndGroupVideos()
+    /// Only reassigns the lists when their contents changed, so a refresh during
+    /// a navigation transition doesn't rebuild the list unnecessarily
+    func refresh() {
+        let dailyChanged = fetchDailyVideos()
+        // Regroup on a new day too, so "Today" stays correct if the app stays open overnight
+        if dailyChanged || !Calendar.current.isDate(lastGroupedDate, inSameDayAs: Date()) {
+            groupVideos()
+        }
+        fetchStitchVideos()
     }
     
     func handleFetchAndGroupVideos() {
@@ -101,14 +109,20 @@ enum VideoListDisplayType: String, CaseIterable {
         groupVideos()
     }
     
-    private func fetchDailyVideos() {
+    /// Returns whether the fetched videos differ from the current ones
+    @discardableResult
+    private func fetchDailyVideos() -> Bool {
         do {
             let descriptor = FetchDescriptor<DailyVideoEntry>(
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
-            self.videos = try modelContext.fetch(descriptor)
+            let fetched = try modelContext.fetch(descriptor)
+            guard fetched.map(\.id) != videos.map(\.id) else { return false }
+            self.videos = fetched
+            return true
         } catch {
             reportIssue(error)
+            return false
         }
     }
     
@@ -117,7 +131,9 @@ enum VideoListDisplayType: String, CaseIterable {
             let descriptor = FetchDescriptor<StitchedVideoEntry>(
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
-            self.stitchVideos = try modelContext.fetch(descriptor)
+            let fetched = try modelContext.fetch(descriptor)
+            guard fetched.map(\.id) != stitchVideos.map(\.id) else { return }
+            self.stitchVideos = fetched
             AppLogger.log("Fetched: \(stitchVideos.count) stitch videos")
         } catch {
             AppLogger.log("Failed to fetch stitch videos: \(error)")
@@ -125,6 +141,7 @@ enum VideoListDisplayType: String, CaseIterable {
     }
     
     private func groupVideos() {
+        lastGroupedDate = Date()
         var groupedVideos: [VideoSection: [DailyVideoEntry]] = [:]
 
         let calendar = Calendar.current

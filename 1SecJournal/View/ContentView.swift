@@ -12,10 +12,16 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var router = NavigationRouter()
+    // Created once in onAppear; modelContext isn't available in init
+    @State private var homeViewModel: HomeListViewModel?
 
     var body: some View {
         NavigationStack(path: $router.navigationStack) {
-            HomeListView(viewModel: HomeListViewModel(modelContext))
+            Group {
+                if let homeViewModel {
+                    HomeListView(viewModel: homeViewModel)
+                }
+            }
                 .navigationDestination(for: NavigationRouter.Destination.self) { destination in
                     switch destination {
                     case .videoRecorder:
@@ -33,6 +39,18 @@ struct ContentView: View {
                 }
         }
         .environmentObject(router)
+        .onAppear {
+            if homeViewModel == nil {
+                homeViewModel = HomeListViewModel(modelContext)
+            }
+        }
+        .onChange(of: router.navigationStack) { oldStack, newStack in
+            // Refresh as soon as a screen pops (e.g. after saving a video) so Home has the
+            // new data before its transition starts, instead of changing mid-animation
+            if newStack.count < oldStack.count {
+                homeViewModel?.refresh()
+            }
+        }
     }
 }
 

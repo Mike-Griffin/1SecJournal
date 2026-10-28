@@ -21,68 +21,66 @@ struct HomeListView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        VStack {
+            videoTypePicker()
             VStack {
-                videoTypePicker()
-                VStack {
-                        List {
-                            if viewModel.videoListDisplayType == .daily {
-                                todayCreatePromptView()
-                                dailyListView()
-                            } else {
-                                stitchedListView()
-                            }
-                    }
-                        .listStyle(.plain)
-                        .scrollIndicators(.hidden)
-                        .navigationDestination(item: $tappedVideo) { video in
-                            DisplayListVideoPlayerWrapperView(video: video)
+                    List {
+                        if viewModel.videoListDisplayType == .daily {
+                            todayCreatePromptView()
+                            dailyListView()
+                        } else {
+                            stitchedListView()
                         }
-                    
-
                 }
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button {
-                        router.push(.videoRecorder)
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 40, weight: .bold)) // Large and bold plus icon
-                            .foregroundColor(.white)
-                            .frame(width: 80, height: 80) // Ensures the button is large enough
-                            .background(Circle().fill(Color.blue)) // Circular shape with blue color
-                            .shadow(radius: 5)
+                    .listStyle(.plain)
+                    .scrollIndicators(.hidden)
+                    .navigationDestination(item: $tappedVideo) { video in
+                        DisplayListVideoPlayerWrapperView(video: video)
                     }
-                }
-                .padding(.trailing, 12)
                 
-            }
-            .padding()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
 
-                    } label: {
-                        Image(systemName: "folder.badge.plus")
-                    }
+            }
+            Spacer()
+            HStack {
+                Spacer()
+                Button {
+                    router.push(.videoRecorder)
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 40, weight: .bold)) // Large and bold plus icon
+                        .foregroundColor(.white)
+                        .frame(width: 80, height: 80) // Ensures the button is large enough
+                        .background(Circle().fill(Color.blue)) // Circular shape with blue color
+                        .shadow(radius: 5)
                 }
             }
-            .sheet(item: $viewModel.createPromptType)  { _ in
-                // I should change this to pass in the HomeListViewModel rather than the prompt view model
-                NewVideoPromptView(viewModel: viewModel.makeMakePromptViewModel())
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-                    .presentationContentInteraction(.resizes)
-            }
-            .sheet(item: $viewModel.selectedShareURL) { video in
-                ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
-            }
-            .navigationTitle("All Videos")
+            .padding(.trailing, 12)
             
         }
+        .padding()
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
+
+                } label: {
+                    Image(systemName: "folder.badge.plus")
+                }
+            }
+        }
+        .sheet(item: $viewModel.createPromptType)  { _ in
+            // I should change this to pass in the HomeListViewModel rather than the prompt view model
+            NewVideoPromptView(viewModel: viewModel.makeMakePromptViewModel())
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationContentInteraction(.resizes)
+        }
+        .sheet(item: $viewModel.selectedShareURL) { video in
+            ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
+        }
+        .navigationTitle("All Videos")
+        
         .onAppear {
             for video in viewModel.videos {
                 AppLogger.log("Checking... \(video.fileURL)", level: .verbose)
@@ -95,7 +93,7 @@ struct HomeListView: View {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
-                viewModel.handleEnterForeground()
+                viewModel.refresh()
             }
         }
     }
