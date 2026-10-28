@@ -7,33 +7,15 @@
 import SwiftUI
 
 struct CameraRecorderOverlayView: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var router: NavigationRouter
-
-
     @State private var recordPressed = false
 let recordButtonAction: () -> ()
     var body: some View {
         VStack {
             HStack {
-                Button {
-                    // should remove the dismiss
-                    dismiss()
-                    Task { @MainActor in
-//                        if !router.path.isEmpty {
-//                            router.path.removeLast()
-//                        }
-                        router.removeLast()
-                    }
-                } label: {
-                    Image(systemName: "x.circle")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .tint(.white)
-                        .fontWeight(.semibold)
-//                        .padding(.top, 2)
-//                        .padding(.leading, 2)
-                }
+                // CameraRecorderViewController draws the close button here so it's
+                // available before the camera starts; this keeps the title centered
+                Color.clear
+                    .frame(width: 24, height: 24)
                 Spacer()
                 if !recordPressed {
                     Text("Record your 1 second memory")

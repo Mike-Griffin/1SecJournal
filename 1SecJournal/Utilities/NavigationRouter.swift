@@ -9,7 +9,6 @@ import SwiftUI
 @MainActor
 final class NavigationRouter: ObservableObject {
     enum Destination: Hashable {
-        case home
         case videoRecorder
         case createStitch(videos: [DailyVideoEntry], preselectedId: UUID? = nil)
     }

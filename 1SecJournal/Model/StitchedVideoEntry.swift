@@ -22,16 +22,8 @@ class StitchedVideoEntry: VideoEntry {
        guard let firstVideoDate = sortedVideos.first?.date,
              let lastVideoDate = sortedVideos.last?.date else {
            AppLogger.log("didn't get a last date or a first date", level: .warning)
-           return "\(self.listDisplayText) :("
-       }
-       for video in sortedVideos {
-           print("created video \(id) has a video on this date \(video.date)")
+           return "\(super.listDisplayText) :("
        }
        return "\(firstVideoDate.videoFormattedDisplay) - \(lastVideoDate.videoFormattedDisplay)"
    }
 }
-
-//extension StitchedVideoEntry {
-//
-//
-//}

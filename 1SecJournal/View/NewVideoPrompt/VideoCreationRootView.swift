@@ -13,7 +13,9 @@ struct VideoCreationRootView: View {
     
     var body: some View {
         if viewModel.videoURL == nil {
-            VideoRecorderView(videoURL: $viewModel.videoURL)
+            VideoRecorderView(videoURL: $viewModel.videoURL) {
+                router.removeLast()
+            }
         } else {
             VStack {
                 VideoPlayerWithDiscardOverlayView(videoURL: $viewModel.videoURL)

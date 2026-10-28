@@ -7,18 +7,11 @@
 import SwiftData
 import UIKit
 
-//protocol ListDisplayable {
-//    var listDisplayText: String { get }
-//}
-
-//@Model class VideoEntry: ListDisplayable {
 @Model class VideoEntry {
-
     var id: UUID
     var filename: String
     var thumbnailFilename: String
     var date: Date // date video is created
-//    var listDisplayText: String
     
     init(filename: String, thumbnailFilename: String) {
         self.id = UUID()
@@ -28,8 +21,6 @@ import UIKit
     }
     
     var listDisplayText: String {
-        // Default implementation
-//        AppLogger.log("returning default listDisplayText")
         return date.videoFormattedDisplay
     }
 }
