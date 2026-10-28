@@ -75,10 +75,74 @@ struct CreateStitchPickerView : View {
         case .custom:
             CustomStitchSelectionView(viewModel: viewModel)
         case .month:
-            Text("month")
+            PeriodStitchSelectionView(viewModel: viewModel, groups: viewModel.monthGroups)
         case .year:
-            Text("year")
+            PeriodStitchSelectionView(viewModel: viewModel, groups: viewModel.yearGroups)
         }
+    }
+}
+
+struct PeriodStitchSelectionView: View {
+    @Bindable var viewModel: CreateStitchViewModel
+    let groups: [PeriodGroup]
+    let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 2)
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 24) {
+            ForEach(groups) { group in
+                PeriodCell(group: group, selection: viewModel.selection(of: group)) {
+                    viewModel.togglePeriod(group)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+}
+
+struct PeriodCell: View {
+    let group: PeriodGroup
+    let selection: PeriodSelection
+    let onTap: () -> Void
+
+    private var countText: String {
+        group.videos.count == 1 ? "1 video" : "\(group.videos.count) videos"
+    }
+
+    private var selectionImageName: String {
+        switch selection {
+        case .none: return "circle"
+        case .partial: return "minus.circle.fill"
+        case .all: return "checkmark.circle.fill"
+        }
+    }
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 6) {
+                // The stack only needs the cards that show
+                ThumbnailStackView(images: group.videos.prefix(3).map(\.thumbnailImage))
+                    .overlay(alignment: .topTrailing) {
+                        Image(systemName: selectionImageName)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(.white, selection == .none ? .clear : .blue)
+                            .shadow(radius: 2)
+                            // Inside the top card, clear of the fanned cards
+                            .padding(.top, 18)
+                            .padding(.trailing, 22)
+                    }
+                Text(group.period.title)
+                    .font(.headline)
+                Text(countText)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(group.period.title), \(countText)")
+        .accessibilityValue(selection == .partial ? "Partly selected" : "")
+        .accessibilityAddTraits(selection == .all ? [.isButton, .isSelected] : .isButton)
     }
 }
 

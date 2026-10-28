@@ -13,6 +13,21 @@ enum StitchTimeframe: String, CaseIterable {
     case year
 }
 
+/// The videos from one month or year
+struct PeriodGroup: Identifiable {
+    let period: VideoPeriod
+    /// Oldest first
+    let videos: [DailyVideoEntry]
+
+    var id: VideoPeriod { period }
+}
+
+enum PeriodSelection {
+    case none
+    case partial
+    case all
+}
+
 @MainActor
 @Observable
 class CreateStitchViewModel {
@@ -24,13 +39,11 @@ class CreateStitchViewModel {
         case preview(URL)
     }
 
-    var selectedTimeFrame: StitchTimeframe = .custom {
-        didSet {
-            selectedIds.removeAll() // could also map them in a dictionary instead
-            // meaning I could keep different selected values for each time frame
-        }
-    }
+    // The selection carries across tabs, so a month picked here shows as checked videos in Custom
+    var selectedTimeFrame: StitchTimeframe = .custom
     var videos: [DailyVideoEntry]
+    let monthGroups: [PeriodGroup]
+    let yearGroups: [PeriodGroup]
     var selectedIds: Set<UUID> = []
     var modelContext: ModelContext
     var creationState: CreationState = .selecting
@@ -56,6 +69,10 @@ class CreateStitchViewModel {
          modelContext: ModelContext) {
         self.videos = videos
         self.modelContext = modelContext
+        monthGroups = VideoPeriod.group(videos, by: .month, date: \.date)
+            .map { PeriodGroup(period: $0.period, videos: $0.items) }
+        yearGroups = VideoPeriod.group(videos, by: .year, date: \.date)
+            .map { PeriodGroup(period: $0.period, videos: $0.items) }
 
         if let preselectedVideoId {
             selectedIds.insert(preselectedVideoId)
@@ -148,6 +165,22 @@ class CreateStitchViewModel {
         }
     }
     
+    func selection(of group: PeriodGroup) -> PeriodSelection {
+        let selectedCount = group.videos.count { selectedIds.contains($0.id) }
+        if selectedCount == 0 { return .none }
+        return selectedCount == group.videos.count ? .all : .partial
+    }
+
+    /// Selects every video in the period, or clears them if they're all selected already
+    func togglePeriod(_ group: PeriodGroup) {
+        let ids = group.videos.map(\.id)
+        if selection(of: group) == .all {
+            selectedIds.subtract(ids)
+        } else {
+            selectedIds.formUnion(ids)
+        }
+    }
+
     func selectVideo(_ video: DailyVideoEntry) {
         if selectedIds.contains(video.id) {
             selectedIds.remove(video.id)
