@@ -109,82 +109,96 @@ struct AVManager {
         var label: String   // e.g. "Aug 2025"
     }
     
-    static func combineVideos(videos: [DailyVideoEntry]) async -> URL? {
+    /// Builds the stitched video in the temporary directory. `progress` is called
+    /// from a background thread with values from 0 to 1.
+    static func combineVideos(
+        clips: [StitchClip],
+        progress: @escaping @Sendable (Double) -> Void
+    ) async throws -> URL {
         let mixComposition = AVMutableComposition()
         guard let videoTrack = mixComposition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) else {
-            reportIssue("Error creating video track")
-            return nil
+            throw StitchError.compositionFailed
         }
+        // Added on first use so a stitch of silent clips doesn't get an empty audio track
+        var audioTrack: AVMutableCompositionTrack?
 
-        
+        // Each clip's transform applies from its start time
+        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
         var runningDuration: CMTime = .zero
-//        var instructions: [AVMutableVideoCompositionInstruction] = []
-        
-        // Preload all assets and tracks
-        var firstTransform: CGAffineTransform? = nil
-        var firstNaturalSize: CGSize? = nil
-        
+        var renderSize: CGSize?
         var segments: [Segment] = []
 
         // Month/Year label
         let df = DateFormatter()
         df.locale = Locale(identifier: "en_US_POSIX")
         df.setLocalizedDateFormatFromTemplate("MMM yyyy") // e.g., "Aug 2025"
-        
-        for (index, video) in videos.enumerated() {
+
+        // Building the composition is quick next to the export, so it gets the first 10%
+        let preparationShare = 0.1
+
+        for (index, clip) in clips.enumerated() {
+            try Task.checkCancellation()
             AppLogger.log("Processing stitching video at index \(index)")
-                let videoURL = video.fileURL
-                let asset = AVURLAsset(url: videoURL)
-                do {
-                    guard let track = try await asset.loadTracks(withMediaType: .video).first else {
-                        reportIssue("no video track found")
-                        continue
-                    }
-                    let duration = try await asset.load(.duration)
-                    let timeRange = CMTimeRange(start: .zero, duration: duration)
-                    try videoTrack.insertTimeRange(timeRange, of: track, at: runningDuration)
-                    
-                    let transform = try await track.load(.preferredTransform)
-                    
-                    if index == 0 {
-                        // Preload all assets and tracks
-                        firstTransform = transform
-                        firstNaturalSize = try await track.load(.naturalSize)
-                    }
-                    
-                    // Collect overlay timing for this clip
-                    let startSec = CMTimeGetSeconds(runningDuration)
-                    let durSec = CMTimeGetSeconds(duration)
-                    segments.append(.init(start: startSec, duration: durSec, label: df.string(from: video.date)))
-                    
-                    runningDuration = CMTimeAdd(runningDuration, duration)
-                } catch {
-                    AppLogger.log(error.localizedDescription)
+            let asset = AVURLAsset(url: clip.url)
+            do {
+                guard let track = try await asset.loadTracks(withMediaType: .video).first else {
+                    AppLogger.log("No video track in \(clip.url.lastPathComponent)", level: .error)
                     continue
                 }
+                let duration = try await asset.load(.duration)
+                let (transform, naturalSize) = try await track.load(.preferredTransform, .naturalSize)
+                try videoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: duration), of: track, at: runningDuration)
+                layerInstruction.setTransform(transform, at: runningDuration)
+
+                if renderSize == nil {
+                    let transformed = naturalSize.applying(transform)
+                    renderSize = CGSize(width: max(1, abs(transformed.width)),
+                                        height: max(1, abs(transformed.height)))
+                }
+
+                do {
+                    if let sourceAudio = try await asset.loadTracks(withMediaType: .audio).first {
+                        if audioTrack == nil {
+                            audioTrack = mixComposition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid)
+                        }
+                        // Keep the audio within the clip so it can't spill into the next one
+                        let audioRange = try await sourceAudio.load(.timeRange)
+                        let range = CMTimeRangeGetIntersection(CMTimeRange(start: .zero, duration: duration), otherRange: audioRange)
+                        if !range.isEmpty {
+                            try audioTrack?.insertTimeRange(range, of: sourceAudio, at: runningDuration + range.start)
+                        }
+                    }
+                } catch {
+                    // The clip still plays, just without sound
+                    AppLogger.log("Skipping audio for \(clip.url.lastPathComponent): \(error)", level: .error)
+                }
+
+                // Collect overlay timing for this clip
+                segments.append(.init(start: CMTimeGetSeconds(runningDuration),
+                                      duration: CMTimeGetSeconds(duration),
+                                      label: df.string(from: clip.date)))
+                runningDuration = runningDuration + duration
+            } catch {
+                try Task.checkCancellation()
+                AppLogger.log("Skipping \(clip.url.lastPathComponent): \(error)", level: .error)
             }
+            progress(preparationShare * Double(index + 1) / Double(clips.count))
+        }
+
+        guard let renderSize, runningDuration > .zero else {
+            throw StitchError.noUsableClips
+        }
+
         let videoComposition = AVMutableVideoComposition()
-        
+
         // One master instruction spanning full timeline
         let mainInstruction = AVMutableVideoCompositionInstruction()
         mainInstruction.timeRange = CMTimeRange(start: .zero, duration: runningDuration)
-
-        let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
-
-        // Apply each segment’s transform at its start time
-        var cursor: CMTime = .zero
-        for video in videos {
-            let asset = AVURLAsset(url: video.fileURL)
-            if let vt = try? await asset.loadTracks(withMediaType: .video).first,
-               let t = try? await vt.load(.preferredTransform),
-               let d = try? await asset.load(.duration) {
-                layerInstruction.setTransform(t, at: cursor)
-                cursor = cursor + d
-            }
-        }
         mainInstruction.layerInstructions = [layerInstruction]
         videoComposition.instructions = [mainInstruction]
-        
+        videoComposition.renderSize = renderSize
+        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+
         // Coalesce adjacent segments that share the same label
         var coalesced: [Segment] = []
         for seg in segments {
@@ -197,18 +211,6 @@ struct AVManager {
                 coalesced.append(seg)
             }
         }
-        
-        // Use the render size from the first track (or max size if clips vary)
-        guard let baseSize = firstNaturalSize,
-              let baseTransform = firstTransform else {
-            reportIssue("Failed to determine render size")
-            return nil
-        }
-        let transformed = baseSize.applying(baseTransform)
-        let renderSize = CGSize(width: max(1, abs(transformed.width)),
-                                height: max(1, abs(transformed.height)))
-        videoComposition.renderSize = renderSize
-        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
 
         // Build overlay layer tree
         let parentLayer = CALayer()
@@ -216,7 +218,7 @@ struct AVManager {
         parentLayer.frame = CGRect(origin: .zero, size: renderSize)
         videoLayer.frame = parentLayer.frame
         parentLayer.addSublayer(videoLayer)
-        
+
         parentLayer.beginTime = AVCoreAnimationBeginTimeAtZero
         parentLayer.isGeometryFlipped = true
 
@@ -228,25 +230,6 @@ struct AVManager {
             textLayer.beginTime = seg.start
             textLayer.duration  = seg.duration
 
-            // Optional: quick fade in/out so label changes are less abrupt
-            let fadeIn = CABasicAnimation(keyPath: "opacity")
-            fadeIn.fromValue = 0
-            fadeIn.toValue = 1
-            fadeIn.beginTime = seg.start
-            fadeIn.duration = 0.15
-            fadeIn.fillMode = .both
-            fadeIn.isRemovedOnCompletion = false
-//            textLayer.add(fadeIn, forKey: "fadeIn")
-
-            let fadeOut = CABasicAnimation(keyPath: "opacity")
-            fadeOut.fromValue = 1
-            fadeOut.toValue = 0
-            fadeOut.beginTime = seg.start + max(0, seg.duration - 0.2)
-            fadeOut.duration = 0.15
-            fadeOut.fillMode = .both
-            fadeOut.isRemovedOnCompletion = false
-//            textLayer.add(fadeOut, forKey: "fadeOut")
-
             parentLayer.addSublayer(textLayer)
         }
 
@@ -254,31 +237,51 @@ struct AVManager {
             postProcessingAsVideoLayer: videoLayer,
             in: parentLayer
         )
-        
 
-            
         // MARK: Export
-        let outputURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
-        
         guard let exportSession = AVAssetExportSession(asset: mixComposition, presetName: AVAssetExportPresetHighestQuality) else {
-            reportIssue("Failed to create export session")
-            return nil
+            throw StitchError.compositionFailed
         }
-        
-        exportSession.outputURL = outputURL
-        exportSession.outputFileType = .mov
         exportSession.videoComposition = videoComposition
-        
+        let outputURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).mov")
+
+        let progressMonitor = Task {
+            for await state in exportSession.states(updateInterval: 0.1) {
+                if case .exporting(let exportProgress) = state {
+                    progress(preparationShare + (1 - preparationShare) * exportProgress.fractionCompleted)
+                }
+            }
+        }
+        defer { progressMonitor.cancel() }
+
         do {
             AppLogger.log("Beginning to export video \(Date())")
             try await exportSession.export(to: outputURL, as: .mov)
             AppLogger.log("Exported stitched video to \(outputURL) at \(Date())")
-            return outputURL
         } catch {
-            reportIssue(error)
+            // Don't leave a partial file behind after a failure or cancel
+            try? FileManager.default.removeItem(at: outputURL)
+            throw error
         }
-        reportIssue("returning nil")
-        return nil
+        progress(1)
+        return outputURL
     }
 }
 
+/// The parts of a daily video the stitcher needs, safe to hand off the main actor
+struct StitchClip: Sendable {
+    let url: URL
+    let date: Date
+}
+
+enum StitchError: LocalizedError {
+    case noUsableClips
+    case compositionFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .noUsableClips: return "None of the selected videos could be read."
+        case .compositionFailed: return "The stitch couldn't be set up."
+        }
+    }
+}

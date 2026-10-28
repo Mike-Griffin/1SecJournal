@@ -27,28 +27,22 @@ struct VideoFileManager {
             
             try FileManager.default.copyItem(at: url, to: destinationURL)
             AppLogger.log("Video saved to: \(destinationURL)")
-            var thumbnailFileName = ""
-            if let thumbnailImage = await AVManager.getThumbnail(from: destinationURL) {
-                thumbnailFileName = uuidString + "thumb.jpg"
-                let thumbDestinationURL = containerURL.appendingPathComponent(thumbnailFileName)
-                if FileManager.default.fileExists(atPath: thumbDestinationURL.path()) {
-                    try FileManager.default.removeItem(at: thumbDestinationURL)
-                }
-                
-                if let data = thumbnailImage.jpegData(compressionQuality: 0.8) {
-                    do {
-                        try data.write(to: thumbDestinationURL)
-                    }
-                }
-                
-                return (fileName, thumbnailFileName)
-
+            
+            guard let thumbnailImage = await AVManager.getThumbnail(from: destinationURL),
+                  let data = thumbnailImage.jpegData(compressionQuality: 0.8) else {
+                // Without a thumbnail there's no entry, so don't keep the copied video either
+                try? FileManager.default.removeItem(at: destinationURL)
+                reportIssue("Failed to create a thumbnail for \(fileName)")
+                return nil
             }
+            let thumbnailFileName = uuidString + "thumb.jpg"
+            let thumbDestinationURL = containerURL.appendingPathComponent(thumbnailFileName)
+            try data.write(to: thumbDestinationURL, options: .atomic)
+            return (fileName, thumbnailFileName)
         } catch {
+            try? FileManager.default.removeItem(at: destinationURL)
             reportIssue("Error saving file \(error.localizedDescription)")
+            return nil
         }
-        
-        reportIssue("returning nil from generateVideoFileURLs")
-        return nil
     }
 }
