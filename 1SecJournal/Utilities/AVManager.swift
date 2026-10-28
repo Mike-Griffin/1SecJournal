@@ -277,8 +277,9 @@ struct AVManager {
         exportSession.videoComposition = videoComposition
         
         do {
+            AppLogger.log("Beginning to export video \(Date())")
             try await exportSession.export(to: outputURL, as: .mov)
-            AppLogger.log("Exported stitched video to \(outputURL)")
+            AppLogger.log("Exported stitched video to \(outputURL) at \(Date())")
             return outputURL
         } catch {
             reportIssue(error)

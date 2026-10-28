@@ -47,17 +47,23 @@ class CreateStitchViewModel {
         Task.detached(priority: .userInitiated) {
 //            await self.combineVideos(selectedVideos)
             let videos = selectedVideos.sorted(by: { $0.date < $1.date })
-            if let outputURL = await AVManager.combineVideos(videos: videos) {
+            guard let outputURL = await AVManager.combineVideos(videos: videos) else {
+                AppLogger.log("Failed to combine videos outputURL is nil", level: .error)
+                return
+            }
+            AppLogger.log("Combined videos to create stitched video with outputURL \(outputURL)")
                 let selectedComposedStitchVideo = ComposedStitchVideo(url: outputURL, dailyVideos: videos)
                 self.stitchVideoUrl = outputURL
                 
                 guard let (fileName, thumbnailFileName) = await VideoFileManager.generateVideoFileURLs(url: selectedComposedStitchVideo.url) else {
+                    AppLogger.log("Failed to generate video file urls for stitched video", level: .error)
+
                     return
                 }
-
                 let stitchedVideo = StitchedVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName, composingVideos: videos)
+            AppLogger.log("Setting view model stitched video to \(stitchedVideo)")
                 self.createdStitch = stitchedVideo // capturing self in this task isnt't great
-            }
+            
         }
     }
     

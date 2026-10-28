@@ -21,18 +21,31 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     var url: URL?
 
     let previewContainer = UIView()
+    
+    // In your view controller:
+
+    let spinner = UIActivityIndicatorView(style: .large)
+
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        // Add spinner to view hierarchy
+//
+//    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            setupCameraSession()
-        //}
+        spinner.center = view.center
+        view.addSubview(spinner)
+        spinner.startAnimating()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.setupCameraSession()
+        }
 //        setupCameraSession()
     }
     
     override func viewDidAppear(_ animated: Bool) {
 //        DispatchQueue.main.async {
-            layoutOverlay()
+//            layoutOverlay()
         //}
     }
     
@@ -106,7 +119,9 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 if self?.captureSession.isRunning == true {
-                    AppLogger.log("✅ Camera is running \(Date())", level: .verbose)
+                    self?.spinner.stopAnimating()
+                    self?.spinner.removeFromSuperview()
+                    self?.layoutOverlay()
                     // Here you could hide a loading indicator, show preview, etc.
                 } else {
                     AppLogger.log("⌛ Camera not running yet \(Date())", level: .verbose)
