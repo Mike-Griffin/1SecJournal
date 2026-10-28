@@ -42,6 +42,85 @@ enum VideoLibrary {
         }
     }
 
+    // MARK: - Unlinked files
+
+    /// Video and thumbnail files that no entry refers to, e.g. from a save that didn't
+    /// finish. A video "X.mov" and its thumbnail "Xthumb.jpg" are grouped together.
+    struct UnlinkedVideo: Identifiable, Hashable {
+        let id: String
+        var videoFilename: String?
+        var thumbnailFilename: String?
+    }
+
+    enum RestoreKind {
+        case daily
+        case stitch
+    }
+
+    static func unlinkedFiles(in context: ModelContext) throws -> [UnlinkedVideo] {
+        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
+            return []
+        }
+        let entries = try context.fetch(FetchDescriptor<VideoEntry>())
+        let referenced = Set(entries.flatMap { [$0.filename, $0.thumbnailFilename] })
+        let filenames = try FileManager.default.contentsOfDirectory(atPath: containerURL.path(percentEncoded: false))
+
+        var byKey: [String: UnlinkedVideo] = [:]
+        for filename in filenames where !referenced.contains(filename) {
+            if filename.hasSuffix(".mov") {
+                let key = String(filename.dropLast(".mov".count))
+                byKey[key, default: UnlinkedVideo(id: key)].videoFilename = filename
+            } else if filename.hasSuffix("thumb.jpg") {
+                let key = String(filename.dropLast("thumb.jpg".count))
+                byKey[key, default: UnlinkedVideo(id: key)].thumbnailFilename = filename
+            }
+        }
+        return Array(byKey.values)
+    }
+
+    /// Adds an entry for an unlinked video, making a thumbnail if it doesn't have one.
+    /// A restored stitch isn't linked to any daily videos.
+    @discardableResult
+    static func restore(_ unlinked: UnlinkedVideo, as kind: RestoreKind, date: Date, in context: ModelContext) async throws -> VideoEntry {
+        guard let videoFilename = unlinked.videoFilename,
+              let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup) else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        var thumbnailFilename = unlinked.thumbnailFilename
+        if thumbnailFilename == nil {
+            guard let image = await AVManager.getThumbnail(from: containerURL.appending(path: videoFilename)),
+                  let data = image.jpegData(compressionQuality: 0.8) else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+            let filename = unlinked.id + "thumb.jpg"
+            try data.write(to: containerURL.appending(path: filename), options: .atomic)
+            thumbnailFilename = filename
+        }
+
+        let entry: VideoEntry
+        switch kind {
+        case .daily:
+            entry = DailyVideoEntry(filename: videoFilename, thumbnailFilename: thumbnailFilename ?? "")
+        case .stitch:
+            entry = StitchedVideoEntry(filename: videoFilename, thumbnailFilename: thumbnailFilename ?? "", composingVideos: [])
+        }
+        entry.date = date
+        context.insert(entry)
+        do {
+            try context.save()
+        } catch {
+            context.delete(entry)
+            throw error
+        }
+        return entry
+    }
+
+    static func removeFiles(of unlinked: UnlinkedVideo) {
+        for filename in [unlinked.videoFilename, unlinked.thumbnailFilename].compactMap({ $0 }) {
+            removeFile(named: filename)
+        }
+    }
+
     private static func dailyVideosById(in context: ModelContext) throws -> [UUID: DailyVideoEntry] {
         let dailyVideos = try context.fetch(FetchDescriptor<DailyVideoEntry>())
         return Dictionary(dailyVideos.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })

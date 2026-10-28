@@ -13,6 +13,7 @@ final class NavigationRouter: ObservableObject {
         case createStitch(videos: [DailyVideoEntry], preselectedId: UUID? = nil)
         case videoDetail(UUID)
         case stitchDetail(UUID)
+        case recoverVideos
     }
 
 //    @Published var path = NavigationPath()

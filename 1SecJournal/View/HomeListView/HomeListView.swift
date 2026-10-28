@@ -62,6 +62,9 @@ struct HomeListView: View {
                         viewModel.exportBackup()
                     }
                     .disabled(viewModel.isPreparingBackup)
+                    Button("Recover Videos", systemImage: "arrow.uturn.backward.circle") {
+                        router.push(.recoverVideos)
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
