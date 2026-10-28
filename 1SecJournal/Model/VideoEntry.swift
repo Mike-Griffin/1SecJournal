@@ -7,11 +7,17 @@
 import SwiftData
 import UIKit
 
+// Every attribute has a default and relationships are optional, which keeps the
+// model compatible with CloudKit sync if it's ever turned on
 @Model class VideoEntry {
-    var id: UUID
-    var filename: String
-    var thumbnailFilename: String
-    var date: Date // date video is created
+    var id: UUID = UUID()
+    var filename: String = ""
+    var thumbnailFilename: String = ""
+    var date: Date = Date() // date video is created
+    var title: String?
+    var journalText: String?
+    /// When the title or journal text last changed
+    var updatedAt: Date?
     
     init(filename: String, thumbnailFilename: String) {
         self.id = UUID()

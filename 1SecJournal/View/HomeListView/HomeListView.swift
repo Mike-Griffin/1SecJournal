@@ -60,6 +60,17 @@ struct HomeListView: View {
         .padding()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Menu {
+                    Button("Export Backup", systemImage: "externaldrive") {
+                        viewModel.exportBackup()
+                    }
+                    .disabled(viewModel.isPreparingBackup)
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("More")
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
@@ -78,6 +89,38 @@ struct HomeListView: View {
         }
         .sheet(item: $viewModel.selectedShareURL) { video in
             ShareSheet(activityItems: ["Check out my daily vids, bruh.", video.url])
+        }
+        .sheet(item: $viewModel.backupShareURL) { backup in
+            ShareSheet(activityItems: [backup.url])
+        }
+        .overlay {
+            if viewModel.isPreparingBackup {
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    VStack(spacing: 12) {
+                        ProgressView()
+                        Text("Preparing backup…")
+                            .font(.headline)
+                    }
+                    .padding(24)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                }
+            }
+        }
+        .overlay(alignment: .top) {
+            if let errorMessage = viewModel.errorMessage {
+                ToastView(message: errorMessage)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.default, value: viewModel.errorMessage)
+        .task(id: viewModel.errorMessage) {
+            guard viewModel.errorMessage != nil,
+                  (try? await Task.sleep(for: .seconds(4))) != nil else { return }
+            viewModel.errorMessage = nil
         }
         .navigationTitle("All Videos")
         
