@@ -18,13 +18,8 @@ struct AVManager {
         
         let time = CMTime(seconds: 1, preferredTimescale: 600) // 1 second into video
         do {
-            // It's possible I'm not throwing the error properly, but I think it should be
-            return try await withCheckedThrowingContinuation { continuation in
-                imageGenerator.generateCGImageAsynchronously(for: time) { cgImage,_,_  in         if let cgImage = cgImage {
-                    continuation.resume(returning: UIImage(cgImage: cgImage))
-                }
-                }
-            }
+            let (cgImage, _) = try await imageGenerator.image(at: time)
+            return UIImage(cgImage: cgImage)
         } catch {
             reportIssue("Failed to generate thumbnail: \(error)")
             return nil

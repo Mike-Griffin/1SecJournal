@@ -306,20 +306,27 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         url = tempURL
     }
 
+    // The file isn't finished until fileOutput(_:didFinishRecordingTo:) is called
     private func stopRecording() {
         videoOutput.stopRecording()
-        guard let url = url else {
-            return
-        }
-        delegate?.didFinishRecording(to: url)
-        return
     }
 
     func fileOutput(_ output: AVCaptureFileOutput,
                     didFinishRecordingTo outputFileURL: URL,
                     from connections: [AVCaptureConnection],
                     error: Error?) {
-        delegate?.didFinishRecording(to: outputFileURL)
-        dismiss(animated: true)
+        // Hitting maxRecordedDuration reports an error even though the file is complete
+        if let error = error as NSError?,
+           error.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool != true {
+            AppLogger.log("❌ Recording failed: \(error)", level: .error)
+            DispatchQueue.main.async { [weak self] in
+                self?.showError(.runtime(error.localizedDescription))
+            }
+            return
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.didFinishRecording(to: outputFileURL)
+            self?.dismiss(animated: true)
+        }
     }
 }
