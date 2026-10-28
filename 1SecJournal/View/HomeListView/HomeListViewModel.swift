@@ -55,12 +55,6 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     var description: String { "" } // prevents UUID or file path from flashing on sheet
 }
 
-struct ComposedStitchVideo: Identifiable {
-    let id = UUID()
-    let url: URL
-    let dailyVideos: [DailyVideoEntry]
-}
-
 enum VideoListDisplayType: String, CaseIterable {
     case daily
     case stitch
