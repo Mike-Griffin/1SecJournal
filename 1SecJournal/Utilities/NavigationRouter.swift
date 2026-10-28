@@ -11,6 +11,9 @@ final class NavigationRouter: ObservableObject {
     enum Destination: Hashable {
         case videoRecorder
         case createStitch(videos: [DailyVideoEntry], preselectedId: UUID? = nil)
+        case videoDetail(UUID)
+        case stitchDetail(UUID)
+        case recoverVideos
     }
 
 //    @Published var path = NavigationPath()

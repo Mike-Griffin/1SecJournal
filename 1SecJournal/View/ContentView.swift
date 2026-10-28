@@ -29,6 +29,12 @@ struct ContentView: View {
                             .navigationBarBackButtonHidden()
                     case .createStitch(let videos, let preselectedId):
                         CreateStitchRootView(videos: videos, preselectedVideoId: preselectedId, modelContext: modelContext)
+                    case .videoDetail(let id):
+                        DailyVideoDetailView(videoID: id)
+                    case .stitchDetail(let id):
+                        StitchDetailView(stitchID: id)
+                    case .recoverVideos:
+                        RecoverVideosView(modelContext: modelContext)
                     }
                 }
                 .onReceive( NotificationCenter.default.publisher(for: .openVideoRecorder)) {  _ in

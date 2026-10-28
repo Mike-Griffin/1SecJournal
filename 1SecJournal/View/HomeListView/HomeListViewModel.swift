@@ -55,6 +55,25 @@ struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     var description: String { "" } // prevents UUID or file path from flashing on sheet
 }
 
+struct PendingDeletion: Identifiable {
+    let video: VideoEntry
+    /// How many stitches a daily video is part of
+    let stitchCount: Int
+    
+    var id: UUID { video.id }
+    
+    var message: String {
+        if video is StitchedVideoEntry {
+            return "This removes the stitch from your journal and your phone. The daily videos in it aren't affected."
+        }
+        switch stitchCount {
+        case 0: return "This removes the video from your journal and your phone. It can't be undone."
+        case 1: return "It's used in 1 stitch, which will keep playing but won't list this day. This can't be undone."
+        default: return "It's used in \(stitchCount) stitches, which will keep playing but won't list this day. This can't be undone."
+        }
+    }
+}
+
 enum VideoListDisplayType: String, CaseIterable {
     case daily
     case stitch
@@ -73,6 +92,10 @@ enum VideoListDisplayType: String, CaseIterable {
     
     // Share Sheet
     var selectedShareURL: SelectedIdentifiableURL?
+    
+    // Delete
+    /// Waiting on the confirmation dialog
+    var pendingDeletion: PendingDeletion?
     
     // Backup
     var isPreparingBackup = false
@@ -208,8 +231,24 @@ enum VideoListDisplayType: String, CaseIterable {
         }
     }
     
-    func deleteVideo(_ video: VideoEntry) {
-        modelContext.delete(video)
+    /// Asks for confirmation first, since deleting also removes the video's files
+    func requestDelete(_ video: VideoEntry) {
+        var stitchCount = 0
+        if let dailyVideo = video as? DailyVideoEntry {
+            stitchCount = (try? VideoLibrary.stitches(containing: dailyVideo, in: modelContext).count) ?? 0
+        }
+        pendingDeletion = PendingDeletion(video: video, stitchCount: stitchCount)
+    }
+    
+    func confirmDelete(_ deletion: PendingDeletion) {
+        pendingDeletion = nil
+        do {
+            try VideoLibrary.delete(deletion.video, in: modelContext)
+        } catch {
+            AppLogger.log("Failed to delete \(deletion.video.id): \(error)", level: .error)
+            errorMessage = "Couldn't delete the video. Please try again."
+        }
+        refresh()
     }
     
     func saveVideo(url: URL) async {
