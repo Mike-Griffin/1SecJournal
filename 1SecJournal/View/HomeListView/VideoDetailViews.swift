@@ -8,10 +8,11 @@ import SwiftUI
 import SwiftData
 import AVKit
 
-/// Plays from the start each time the screen appears. The player is kept in state
+/// Plays from the start each time the screen appears, unless autoplay is off. The player is kept in state
 /// so redrawing the screen doesn't restart playback.
 struct VideoPlaybackView: View {
     let url: URL
+    var autoplay = true
     @State private var player: AVPlayer?
 
     var body: some View {
@@ -19,10 +20,13 @@ struct VideoPlaybackView: View {
             .task(id: url) {
                 let newPlayer = AVPlayer(url: url)
                 player = newPlayer
-                newPlayer.play()
+                if autoplay {
+                    newPlayer.play()
+                }
             }
             .onAppear {
                 // Coming back from another screen; the first appearance is handled by the task
+                guard autoplay else { return }
                 player?.seek(to: .zero)
                 player?.play()
             }
