@@ -28,6 +28,7 @@
 		7FA1B2C32E9F00010000000D /* SchemaV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F00010000000C /* SchemaV1.swift */; };
 		7FA1B2C32E9F00010000000F /* MigrationPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F00010000000E /* MigrationPlan.swift */; };
 		7FA1B2C32E9F000100000011 /* VideoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000010 /* VideoLibrary.swift */; };
+		7FA1B2C32E9F000100000017 /* AudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000016 /* AudioSession.swift */; };
 		7FA1B2C32E9F000100000013 /* VideoDetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000012 /* VideoDetailViews.swift */; };
 		7FA1B2C32E9F000100000015 /* RecoverVideosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000014 /* RecoverVideosView.swift */; };
 		7FA1B2C32E9F000100000009 /* ThumbnailStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA1B2C32E9F000100000008 /* ThumbnailStackView.swift */; };
@@ -119,6 +120,7 @@
 		7FA1B2C32E9F00010000000C /* SchemaV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaV1.swift; sourceTree = "<group>"; };
 		7FA1B2C32E9F00010000000E /* MigrationPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationPlan.swift; sourceTree = "<group>"; };
 		7FA1B2C32E9F000100000010 /* VideoLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoLibrary.swift; sourceTree = "<group>"; };
+		7FA1B2C32E9F000100000016 /* AudioSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSession.swift; sourceTree = "<group>"; };
 		7FA1B2C32E9F000100000012 /* VideoDetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDetailViews.swift; sourceTree = "<group>"; };
 		7FA1B2C32E9F000100000014 /* RecoverVideosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverVideosView.swift; sourceTree = "<group>"; };
 		7FA1B2C32E9F000100000008 /* ThumbnailStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailStackView.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 				7FA1B2C32E9F000100000006 /* VideoPeriod.swift */,
 				7FA1B2C32E9F00010000000A /* BackupExporter.swift */,
 				7FA1B2C32E9F000100000010 /* VideoLibrary.swift */,
+				7FA1B2C32E9F000100000016 /* AudioSession.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -586,6 +589,7 @@
 				7FA1B2C32E9F00010000000D /* SchemaV1.swift in Sources */,
 				7FA1B2C32E9F00010000000F /* MigrationPlan.swift in Sources */,
 				7FA1B2C32E9F000100000011 /* VideoLibrary.swift in Sources */,
+				7FA1B2C32E9F000100000017 /* AudioSession.swift in Sources */,
 				7FA1B2C32E9F000100000013 /* VideoDetailViews.swift in Sources */,
 				7FA1B2C32E9F000100000015 /* RecoverVideosView.swift in Sources */,
 				7FA1B2C32E9F000100000009 /* ThumbnailStackView.swift in Sources */,

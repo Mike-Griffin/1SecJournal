@@ -25,7 +25,7 @@ struct ContentView: View {
                 .navigationDestination(for: NavigationRouter.Destination.self) { destination in
                     switch destination {
                     case .videoRecorder:
-                        VideoCreationRootView(viewModel: VideoCreationRootViewModel(modelContext))
+                        VideoCreationRootView(modelContext: modelContext)
                             .navigationBarBackButtonHidden()
                     case .createStitch(let videos, let preselectedId):
                         CreateStitchRootView(videos: videos, preselectedVideoId: preselectedId, modelContext: modelContext)

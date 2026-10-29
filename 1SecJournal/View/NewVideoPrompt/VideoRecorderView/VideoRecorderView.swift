@@ -13,7 +13,6 @@ struct VideoRecorderView: UIViewControllerRepresentable {
 
     // rather than have a binding of just a URL. Pass in the entire viewmodel
     @Binding var videoURL: URL?
-    var maxDuration: TimeInterval = 10
     let onClose: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -23,14 +22,16 @@ struct VideoRecorderView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> CameraRecorderViewController {
         let controller = CameraRecorderViewController()
         controller.delegate = context.coordinator
-        controller.maxDuration = maxDuration
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: CameraRecorderViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: CameraRecorderViewController, context: Context) {
+        // Keeps the binding current, so a finished recording reaches the view that's on screen
+        context.coordinator.parent = self
+    }
 
     class Coordinator: NSObject, CustomCameraViewControllerDelegate {
-        let parent: VideoRecorderView
+        var parent: VideoRecorderView
 
         init(parent: VideoRecorderView ) {
             self.parent = parent

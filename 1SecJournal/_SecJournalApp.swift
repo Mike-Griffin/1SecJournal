@@ -12,6 +12,10 @@ import SwiftData
 struct _SecJournalApp: App {
     private let container = AppModelContainer.make()
 
+    init() {
+        AudioSession.configureForPlayback()
+    }
+
     var body: some Scene {
         WindowGroup {
             switch container {

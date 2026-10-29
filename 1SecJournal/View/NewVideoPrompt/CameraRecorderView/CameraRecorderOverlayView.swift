@@ -7,8 +7,8 @@
 import SwiftUI
 
 struct CameraRecorderOverlayView: View {
-    @State private var recordPressed = false
-let recordButtonAction: () -> ()
+    let recorder: RecorderModel
+    let recordButtonAction: () -> ()
     var body: some View {
         VStack {
             HStack {
@@ -17,7 +17,7 @@ let recordButtonAction: () -> ()
                 Color.clear
                     .frame(width: 24, height: 24)
                 Spacer()
-                if !recordPressed {
+                if recorder.state == .idle {
                     Text("Record your 1 second memory")
                         .font(.system(size: 20, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
@@ -35,14 +35,11 @@ let recordButtonAction: () -> ()
             .frame(height: 40)
             .padding(.leading, 4)
             .padding(.top, 2)
+            .animation(.default, value: recorder.state)
             
             Spacer()
-            RecordVideoButtonView(action: {
-                withAnimation {
-                    recordPressed = true
-                }
-                recordButtonAction()
-            })
+            RecordVideoButtonView(state: recorder.state, duration: CameraRecorderViewController.maxDuration,
+                                  action: recordButtonAction)
                 .padding(.bottom)
         }
     }
