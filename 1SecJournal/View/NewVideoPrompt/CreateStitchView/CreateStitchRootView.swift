@@ -8,13 +8,15 @@
 import SwiftUI
 import SwiftData
 
+/// Shown as a full-screen cover inside its own NavigationStack
 struct CreateStitchRootView: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel: CreateStitchViewModel
 
-    init(preselectedVideoId: UUID?, modelContext: ModelContext) {
+    init(request: StitchRequest, modelContext: ModelContext) {
         _viewModel = State(wrappedValue:
-                            CreateStitchViewModel(preselectedVideoId: preselectedVideoId,
+                            CreateStitchViewModel(preselectedIDs: request.preselectedIDs,
+                                                  timeframe: request.timeframe,
                                                   modelContext: modelContext))
     }
     
@@ -35,7 +37,16 @@ struct CreateStitchRootView: View {
                     }
             }
         }
-        .navigationBarBackButtonHidden(viewModel.isSaving)
+        .navigationTitle("New Stitch")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel", systemImage: "xmark") {
+                    dismiss()
+                }
+                .disabled(viewModel.isSaving)
+            }
+        }
         .overlay(alignment: .top) {
             if let errorMessage = viewModel.errorMessage {
                 ToastView(message: errorMessage)
@@ -74,7 +85,7 @@ struct CreateStitchRootView: View {
             Button {
                 Task {
                     if await viewModel.saveStitch() {
-                        router.removeLast()
+                        dismiss()
                     }
                 }
             } label: {

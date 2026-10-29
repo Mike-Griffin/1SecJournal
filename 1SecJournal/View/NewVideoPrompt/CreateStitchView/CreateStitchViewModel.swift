@@ -66,7 +66,7 @@ class CreateStitchViewModel {
         return nil
     }
         
-    init(preselectedVideoId: UUID? = nil, modelContext: ModelContext) {
+    init(preselectedIDs: Set<UUID> = [], timeframe: StitchTimeframe = .custom, modelContext: ModelContext) {
         // Newest first, like Home
         let descriptor = FetchDescriptor<DailyVideoEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
         let videos: [DailyVideoEntry]
@@ -83,9 +83,8 @@ class CreateStitchViewModel {
         yearGroups = VideoPeriod.group(videos, by: .year, date: \.date)
             .map { PeriodGroup(period: $0.period, videos: $0.items) }
 
-        if let preselectedVideoId {
-            selectedIds.insert(preselectedVideoId)
-        }
+        selectedIds = preselectedIDs
+        selectedTimeFrame = timeframe
     }
     
     func createStitch() {

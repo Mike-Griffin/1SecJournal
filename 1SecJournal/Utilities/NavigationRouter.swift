@@ -6,39 +6,57 @@
 //
 import SwiftUI
 
+enum AppTab: Hashable {
+    case days
+    case stitches
+    /// Not a real tab: the camera button in the tab bar. Selecting it opens the recorder.
+    case record
+}
+
+/// What a new stitch starts with selected
+struct StitchRequest: Identifiable {
+    let id = UUID()
+    var preselectedIDs: Set<UUID> = []
+    var timeframe: StitchTimeframe = .custom
+}
+
 @MainActor
 final class NavigationRouter: ObservableObject {
     /// Plain values only. A SwiftData model's hash changes when it's first saved,
     /// which confuses NavigationStack about which screen is which
     enum Destination: Hashable {
-        case videoRecorder
-        case createStitch(preselectedId: UUID? = nil)
         case videoDetail(UUID)
         case stitchDetail(UUID)
         case recoverVideos
     }
 
-//    @Published var path = NavigationPath()
-    
-    @Published var navigationStack: [Destination] = []
-    
+    @Published var selectedTab: AppTab = .days
+    // Each tab keeps its own stack
+    @Published var daysPath: [Destination] = []
+    @Published var stitchesPath: [Destination] = []
+    // The recorder and Create Stitch are full-screen covers, outside the stacks
+    @Published var isRecorderPresented = false
+    @Published var stitchRequest: StitchRequest?
+
+    /// Pushes onto the stack of the tab that's showing
     func push(_ destination: Destination) {
-        if let lastElement = navigationStack.last {
-            guard lastElement != destination else {
-                AppLogger.log("Attempting to push destination when it's already the last destination in the stack", level: .warning)
-               return
-           }
+        switch selectedTab {
+        case .stitches:
+            guard stitchesPath.last != destination else { return }
+            stitchesPath.append(destination)
+        case .days, .record:
+            guard daysPath.last != destination else { return }
+            daysPath.append(destination)
         }
-         
-//        path.append(destination)
-        navigationStack.append(destination)
     }
-    
-    func removeLast() {
-//        path.removeLast()
-        guard !navigationStack.isEmpty else {
-            return
-        }
-        navigationStack.removeLast()
+
+    func openRecorder() {
+        // Only one cover can show at a time
+        stitchRequest = nil
+        isRecorderPresented = true
+    }
+
+    func newStitch(_ request: StitchRequest = StitchRequest()) {
+        stitchRequest = request
     }
 }
