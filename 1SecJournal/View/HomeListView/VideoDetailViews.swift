@@ -52,11 +52,10 @@ struct DailyVideoDetailView: View {
                 ZStack(alignment: .bottomTrailing) {
                     VideoPlaybackView(url: video.fileURL)
                     Text(video.date.videoFormattedDisplay)
-                        .padding(8)
-                        .background(.ultraThinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .foregroundColor(.white)
-                        .font(.caption)
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .glassEffect(in: .capsule)
                         .padding()
                 }
             } related: {

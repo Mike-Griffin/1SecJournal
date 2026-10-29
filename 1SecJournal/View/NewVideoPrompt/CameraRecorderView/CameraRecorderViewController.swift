@@ -452,8 +452,9 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
             }
             self.logDiagnostics("Recording finished")
             self.recorder.state = .finished
+            // SwiftUI swaps this screen for the preview. Don't call dismiss(animated:) here:
+            // inside a full-screen cover it closes the whole cover before the clip is saved.
             self.delegate?.didFinishRecording(to: outputFileURL)
-            self.dismiss(animated: true)
             // The preview should replace this screen; if it doesn't, don't leave the button stuck
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 guard let self, self.recorder.state == .finished, self.viewIfLoaded?.window != nil else { return }

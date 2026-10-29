@@ -8,8 +8,9 @@
 import SwiftUI
 import SwiftData
 
+/// The recorder, then a preview to save or discard. Shown as a full-screen cover.
 struct VideoCreationRootView: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(\.dismiss) private var dismiss
     // Owned here so redrawing the navigation destination can't swap in a new view model
     // while the camera is open, which left the finished recording with the old one
     @State private var viewModel: VideoCreationRootViewModel
@@ -21,7 +22,7 @@ struct VideoCreationRootView: View {
     var body: some View {
         if viewModel.videoURL == nil {
             VideoRecorderView(videoURL: $viewModel.videoURL) {
-                router.removeLast()
+                dismiss()
             }
         } else {
             VStack {
@@ -29,13 +30,12 @@ struct VideoCreationRootView: View {
                 Button {
                     Task { @MainActor in
                         await viewModel.saveVideo()
-                        router.removeLast()
+                        dismiss()
                     }
                 } label: {
-                    Text("Temp save")
-                        .pillButtonStyle(backgroundColor: .teal)
-
+                    SaveButtonView()
                 }
+                .padding(.bottom, 8)
             }
         }
     }

@@ -25,10 +25,9 @@ struct CreateStitchView: View {
     var body: some View {
         ZStack {
             VStack {
-                Text("Create Stitch")
-                    .font(.title)
                 Text("Select videos to combine into one video")
                     .font(.subheadline)
+                    .foregroundStyle(.secondary)
                 Picker("Select Timeframe", selection: $viewModel.selectedTimeFrame) {
                     ForEach (StitchTimeframe.allCases, id: \.self) { timeframe in
                         Text(timeframe.rawValue)
@@ -48,17 +47,15 @@ struct CreateStitchView: View {
                 if(!viewModel.selectedIds.isEmpty) {
                     Button {
                         AppLogger.log("Constructing stitch with \(viewModel.selectedIds.count) videos")
-                        //dismiss()
                         viewModel.createStitch()
                     } label: {
-                        Text("Create stitch")
+                        Text(viewModel.selectedIds.count == 1 ? "Stitch 1 Video" : "Stitch \(viewModel.selectedIds.count) Videos")
                             .fontWeight(.semibold)
-//                            .frame(width: 100)
-                            .padding(8)
-                            .background(.gray)
-                            .foregroundStyle(.white)
-                            .clipShape(Capsule())
+                            .padding(.horizontal, 8)
                     }
+                    .buttonStyle(.glassProminent)
+                    .tint(.blue)
+                    .controlSize(.large)
                     .padding(.bottom, 8)
                     
                 }

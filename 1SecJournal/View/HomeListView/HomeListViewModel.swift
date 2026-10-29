@@ -38,16 +38,6 @@ struct VideoSection: Hashable, Equatable, Comparable {
     }
 }
 
-enum CreatePromptType: Identifiable {
-    case recordOnly
-
-    var id: String {
-        switch self {
-        case .recordOnly: return "record"
-        }
-    }
-}
-
 struct SelectedIdentifiableURL: Identifiable, CustomStringConvertible {
     let id = UUID()
     let url: URL
@@ -74,15 +64,8 @@ struct PendingDeletion: Identifiable {
     }
 }
 
-enum VideoListDisplayType: String, CaseIterable {
-    case daily
-    case stitch
-}
-
 @MainActor
 @Observable class HomeListViewModel {
-    var videoListDisplayType: VideoListDisplayType = .daily
-    
     // Daily Video Display
     var videos: [DailyVideoEntry] = []
     var sectionedVideos: [(section: VideoSection, videos: [DailyVideoEntry])] = []
@@ -103,9 +86,6 @@ enum VideoListDisplayType: String, CaseIterable {
     /// Shown as a toast
     var errorMessage: String?
     
-    // Prompt Management
-    var createPromptType: CreatePromptType?
-    var uploadTodayVideoCTATapped: Bool = false
     @ObservationIgnored private var lastGroupedDate = Date()
     
     var modelContext: ModelContext
@@ -251,36 +231,9 @@ enum VideoListDisplayType: String, CaseIterable {
         refresh()
     }
     
-    func saveVideo(url: URL) async {
-        guard let (fileName, thumbnailFileName) = await VideoFileManager.generateVideoFileURLs(url: url) else {
-            return
-        }
-        let newVideo = DailyVideoEntry(filename: fileName, thumbnailFilename: thumbnailFileName)
-        videos.append(newVideo)
-        modelContext.insert(newVideo)
-        groupVideos()
-    }
-
-    
-    // Prompt Management
     func shouldShowTodayPrompt() -> Bool {
-        if uploadTodayVideoCTATapped {
-            return false
-        }
         let calendar = Calendar.current
         guard let firstSection = sectionedVideos.first else { return false }
         return firstSection.section.sortDate != calendar.startOfDay(for: Date())
-    }
-    
-
-    
-    func makeMakePromptViewModel() -> NewVideoPromptViewModel {
-        return NewVideoPromptViewModel { [weak self] in
-            self?.createPromptType = nil
-        } onSave: { [weak self] url in
-            Task {
-               await self?.saveVideo(url: url)
-            }
-        }
     }
 }
