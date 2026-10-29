@@ -8,10 +8,11 @@ import SwiftUI
 import SwiftData
 import AVKit
 
-/// Plays from the start each time the screen appears. The player is kept in state
+/// Plays from the start each time the screen appears, unless autoplay is off. The player is kept in state
 /// so redrawing the screen doesn't restart playback.
 struct VideoPlaybackView: View {
     let url: URL
+    var autoplay = true
     @State private var player: AVPlayer?
 
     var body: some View {
@@ -19,10 +20,13 @@ struct VideoPlaybackView: View {
             .task(id: url) {
                 let newPlayer = AVPlayer(url: url)
                 player = newPlayer
-                newPlayer.play()
+                if autoplay {
+                    newPlayer.play()
+                }
             }
             .onAppear {
                 // Coming back from another screen; the first appearance is handled by the task
+                guard autoplay else { return }
                 player?.seek(to: .zero)
                 player?.play()
             }
@@ -44,7 +48,7 @@ struct DailyVideoDetailView: View {
     var body: some View {
         if let video = matches.first {
             let stitches = allStitches.filter { $0.sourceVideoIDs.contains(video.id) }
-            VStack(spacing: 0) {
+            VideoDetailLayout(video: video, journalPlaceholder: "Write about this day…") {
                 ZStack(alignment: .bottomTrailing) {
                     VideoPlaybackView(url: video.fileURL)
                     Text(video.date.videoFormattedDisplay)
@@ -55,6 +59,7 @@ struct DailyVideoDetailView: View {
                         .font(.caption)
                         .padding()
                 }
+            } related: {
                 if !stitches.isEmpty {
                     ThumbnailStrip(title: stitches.count == 1 ? "In 1 stitch" : "In \(stitches.count) stitches",
                                    videos: stitches) { stitch in
@@ -62,8 +67,7 @@ struct DailyVideoDetailView: View {
                     }
                 }
             }
-            .navigationTitle(video.date.videoFormattedDisplay)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(video.displayTitle ?? video.date.videoFormattedDisplay)
         } else {
             ContentUnavailableView("Video not found", systemImage: "video.slash")
         }
@@ -83,8 +87,9 @@ struct StitchDetailView: View {
         if let stitch = matches.first {
             let dailyById = Dictionary(allDailyVideos.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
             let sources = stitch.sourceVideoIDs.compactMap { dailyById[$0] }
-            VStack(spacing: 0) {
+            VideoDetailLayout(video: stitch, journalPlaceholder: "Write about these days…") {
                 VideoPlaybackView(url: stitch.fileURL)
+            } related: {
                 if sources.isEmpty {
                     Text("The videos this stitch was made from aren't linked to it anymore.")
                         .font(.footnote)
@@ -98,11 +103,89 @@ struct StitchDetailView: View {
                     }
                 }
             }
-            .navigationTitle(stitch.listDisplayText)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(stitch.displayTitle ?? stitch.listDisplayText)
         } else {
             ContentUnavailableView("Stitch not found", systemImage: "video.slash")
         }
+    }
+}
+
+/// The player, then the title and journal fields, then related videos. Scrolls so the
+/// fields stay reachable with the keyboard up.
+struct VideoDetailLayout<Player: View, Related: View>: View {
+    @Environment(\.modelContext) private var modelContext
+    let video: VideoEntry
+    let journalPlaceholder: String
+    @ViewBuilder let player: () -> Player
+    @ViewBuilder let related: () -> Related
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                player()
+                    .containerRelativeFrame(.vertical) { height, _ in height * 0.6 }
+                JournalFields(video: video, journalPlaceholder: journalPlaceholder)
+                related()
+            }
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            // Autosave would get there too; this keeps the edit if the app is closed right after
+            do {
+                try modelContext.save()
+            } catch {
+                AppLogger.log("Failed to save edits to \(video.id): \(error)", level: .error)
+            }
+        }
+    }
+}
+
+/// Title and journal text, saved as they're typed
+struct JournalFields: View {
+    let video: VideoEntry
+    let journalPlaceholder: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            TextField("Add a title", text: binding(\.title), axis: .vertical)
+                .font(.title3.weight(.semibold))
+                // Lines up with the text inside the TextEditor below
+                .padding(.horizontal, 5)
+            ZStack(alignment: .topLeading) {
+                // Sizes the editor to its text, since a TextEditor in a scroll view has no height of its own
+                Text((video.journalText ?? "") + " ")
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 5)
+                    .opacity(0)
+                    .frame(maxWidth: .infinity, minHeight: 100, alignment: .topLeading)
+                TextEditor(text: binding(\.journalText))
+                    .scrollContentBackground(.hidden)
+                    .scrollDisabled(true)
+                if (video.journalText ?? "").isEmpty {
+                    Text(journalPlaceholder)
+                        .foregroundStyle(.tertiary)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 5)
+                        .allowsHitTesting(false)
+                }
+            }
+            .font(.body)
+        }
+        .padding()
+    }
+
+    /// Stores empty text as nil and stamps updatedAt when the text changes
+    private func binding(_ keyPath: ReferenceWritableKeyPath<VideoEntry, String?>) -> Binding<String> {
+        Binding(
+            get: { video[keyPath: keyPath] ?? "" },
+            set: { newValue in
+                let stored = newValue.isEmpty ? nil : newValue
+                guard stored != video[keyPath: keyPath] else { return }
+                video[keyPath: keyPath] = stored
+                video.updatedAt = Date()
+            }
+        )
     }
 }
 

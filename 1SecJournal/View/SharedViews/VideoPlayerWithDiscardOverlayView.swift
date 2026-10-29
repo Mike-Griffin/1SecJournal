@@ -15,7 +15,8 @@ struct  VideoPlayerWithDiscardOverlayView: View {
         ZStack {
             if let url = videoURL {
                 
-                VideoPlayer(player: AVPlayer(url: url))
+                // Keeps one player across redraws, e.g. while a title is typed below it
+                VideoPlaybackView(url: url, autoplay: false)
                 // This was used in the original code to make it a small video view
 //                    .aspectRatio(9/16, contentMode: .fill)
 //                    .frame(height: 300)

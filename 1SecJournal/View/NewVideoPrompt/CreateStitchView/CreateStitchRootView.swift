@@ -69,6 +69,11 @@ struct CreateStitchRootView: View {
                     }
                 }
             ))
+            TextField("Title (optional)", text: $viewModel.title)
+                .textFieldStyle(.roundedBorder)
+                .submitLabel(.done)
+                .padding(.horizontal)
+                .disabled(viewModel.isSaving)
             Button {
                 Task {
                     if await viewModel.saveStitch() {
