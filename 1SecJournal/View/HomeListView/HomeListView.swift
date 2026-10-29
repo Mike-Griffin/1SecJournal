@@ -72,7 +72,7 @@ struct HomeListView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    router.push(NavigationRouter.Destination.createStitch(videos: viewModel.videos))
+                    router.push(.createStitch())
 
                 } label: {
                     Image(systemName: "folder.badge.plus")
@@ -197,8 +197,7 @@ struct HomeListView: View {
                 Spacer()
                 Menu {
                     Button("Stitch to New Video") {
-//                        router.path.append(NavigationRouter.Destination.createStitch(videos: viewModel.videos, preselectedId: video.id))
-                        router.push(.createStitch(videos: viewModel.videos, preselectedId: video.id))
+                        router.push(.createStitch(preselectedId: video.id))
                     }
                     
                     Button("Share") {

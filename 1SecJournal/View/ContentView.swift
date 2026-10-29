@@ -27,8 +27,8 @@ struct ContentView: View {
                     case .videoRecorder:
                         VideoCreationRootView(modelContext: modelContext)
                             .navigationBarBackButtonHidden()
-                    case .createStitch(let videos, let preselectedId):
-                        CreateStitchRootView(videos: videos, preselectedVideoId: preselectedId, modelContext: modelContext)
+                    case .createStitch(let preselectedId):
+                        CreateStitchRootView(preselectedVideoId: preselectedId, modelContext: modelContext)
                     case .videoDetail(let id):
                         DailyVideoDetailView(videoID: id)
                     case .stitchDetail(let id):

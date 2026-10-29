@@ -8,9 +8,11 @@ import SwiftUI
 
 @MainActor
 final class NavigationRouter: ObservableObject {
+    /// Plain values only. A SwiftData model's hash changes when it's first saved,
+    /// which confuses NavigationStack about which screen is which
     enum Destination: Hashable {
         case videoRecorder
-        case createStitch(videos: [DailyVideoEntry], preselectedId: UUID? = nil)
+        case createStitch(preselectedId: UUID? = nil)
         case videoDetail(UUID)
         case stitchDetail(UUID)
         case recoverVideos

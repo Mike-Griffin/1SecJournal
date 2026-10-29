@@ -66,9 +66,16 @@ class CreateStitchViewModel {
         return nil
     }
         
-    init(videos: [DailyVideoEntry],
-         preselectedVideoId: UUID? = nil,
-         modelContext: ModelContext) {
+    init(preselectedVideoId: UUID? = nil, modelContext: ModelContext) {
+        // Newest first, like Home
+        let descriptor = FetchDescriptor<DailyVideoEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        let videos: [DailyVideoEntry]
+        do {
+            videos = try modelContext.fetch(descriptor)
+        } catch {
+            AppLogger.log("Failed to fetch videos for a stitch: \(error)", level: .error)
+            videos = []
+        }
         self.videos = videos
         self.modelContext = modelContext
         monthGroups = VideoPeriod.group(videos, by: .month, date: \.date)

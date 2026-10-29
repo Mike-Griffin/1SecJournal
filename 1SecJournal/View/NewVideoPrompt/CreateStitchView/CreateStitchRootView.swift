@@ -12,12 +12,9 @@ struct CreateStitchRootView: View {
     @EnvironmentObject var router: NavigationRouter
     @State private var viewModel: CreateStitchViewModel
 
-    init(videos: [DailyVideoEntry],
-         preselectedVideoId: UUID?,
-         modelContext: ModelContext) {
+    init(preselectedVideoId: UUID?, modelContext: ModelContext) {
         _viewModel = State(wrappedValue:
-                            CreateStitchViewModel(videos: videos,
-                                                  preselectedVideoId: preselectedVideoId,
+                            CreateStitchViewModel(preselectedVideoId: preselectedVideoId,
                                                   modelContext: modelContext))
     }
     
