@@ -25,10 +25,13 @@ struct VideoRecorderView: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(_ uiViewController: CameraRecorderViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: CameraRecorderViewController, context: Context) {
+        // Keeps the binding current, so a finished recording reaches the view that's on screen
+        context.coordinator.parent = self
+    }
 
     class Coordinator: NSObject, CustomCameraViewControllerDelegate {
-        let parent: VideoRecorderView
+        var parent: VideoRecorderView
 
         init(parent: VideoRecorderView ) {
             self.parent = parent

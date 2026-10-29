@@ -454,6 +454,13 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
             self.recorder.state = .finished
             self.delegate?.didFinishRecording(to: outputFileURL)
             self.dismiss(animated: true)
+            // The preview should replace this screen; if it doesn't, don't leave the button stuck
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                guard let self, self.recorder.state == .finished, self.viewIfLoaded?.window != nil else { return }
+                self.logDiagnostics("STUCK: still on the camera after the recording finished")
+                self.recorder.state = .idle
+                self.showToast("Couldn't open the recording. Try again.")
+            }
         }
     }
 
