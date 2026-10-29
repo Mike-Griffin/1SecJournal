@@ -14,7 +14,12 @@ struct RecordVideoButtonView: View {
     var action: () -> Void
     @State private var countdownProgress = 0.0
 
-    private var isActive: Bool { state != .idle }
+    private var isActive: Bool {
+        switch state {
+        case .starting, .recording, .stopping, .finished: return true
+        case .idle, .restarting: return false
+        }
+    }
 
     var body: some View {
         Button(action: action) {
@@ -45,9 +50,9 @@ struct RecordVideoButtonView: View {
                 withAnimation(.linear(duration: duration)) {
                     countdownProgress = 1
                 }
-            case .idle:
+            case .idle, .restarting:
                 countdownProgress = 0
-            case .starting, .finished:
+            case .starting, .stopping, .finished:
                 break
             }
         }

@@ -18,7 +18,11 @@ enum RecordingState {
     /// startRecording was called; the file output hasn't confirmed yet
     case starting
     case recording
+    /// stopRecording was called; waiting for the file to finish
+    case stopping
     case finished
+    /// The capture session is being rebuilt after the camera stopped responding
+    case restarting
 }
 
 /// Shared with the SwiftUI overlay so the record button shows what the camera is actually doing
@@ -70,9 +74,16 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     // All capture session work happens on this queue, per Apple's guidance
     private let sessionQueue = DispatchQueue(label: "com.comedichoney.1SecJournal.cameraSession")
     private static let startTimeout: TimeInterval = 3
+    /// How long the file output gets to confirm a start or stop before the session is rebuilt
+    private static let responseTimeout: TimeInterval = 1
+    /// The newest recorder, so a closing one doesn't change the audio session under it
+    private static weak var current: CameraRecorderViewController?
+    private var responseCheck: DispatchWorkItem?
+    private var tapTime: Date?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        Self.current = self
         view.backgroundColor = .black
         setupSpinner()
         setupCloseButton()
@@ -89,7 +100,10 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
             if captureSession.isRunning {
                 captureSession.stopRunning()
             }
-            AudioSession.configureForPlayback()
+            DispatchQueue.main.async { [weak self] in
+                guard Self.current == nil || Self.current === self else { return }
+                AudioSession.configureForPlayback()
+            }
         }
     }
 
@@ -317,45 +331,106 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         switch recorder.state {
         case .idle:
             startRecording()
-        case .recording:
-            // Stops early; the clip is still saved
+        case .starting, .recording:
+            // Stops early; a clip that started is still saved
             stopRecording()
-        case .starting, .finished:
+        case .stopping, .finished, .restarting:
             break
         }
     }
 
     private func startRecording() {
         guard let connection = videoOutput.connection(with: .video), connection.isActive else {
-            AppLogger.log("Video connection is not active", level: .warning)
+            logDiagnostics("Record tapped but the video connection isn't active")
             showToast(CameraError.notReady.message)
             return
         }
         hideToast()
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("output.mov")
-        try? FileManager.default.removeItem(at: tempURL)
+        // A new file each time, so a player still holding the last take can't get in the way
+        let directory = FileManager.default.temporaryDirectory.appending(path: "Recordings", directoryHint: .isDirectory)
+        try? FileManager.default.removeItem(at: directory)
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let fileURL = directory.appending(path: UUID().uuidString + ".mov")
+
+        tapTime = Date()
+        logDiagnostics("Starting recording")
         recorder.state = .starting
-        videoOutput.startRecording(to: tempURL, recordingDelegate: self)
-        url = tempURL
+        videoOutput.startRecording(to: fileURL, recordingDelegate: self)
+        url = fileURL
+        expectResponse(while: .starting, "Recording never started")
     }
 
     // The file isn't finished until fileOutput(_:didFinishRecordingTo:) is called
     private func stopRecording() {
+        logDiagnostics("Stopping recording")
+        recorder.state = .stopping
         videoOutput.stopRecording()
+        expectResponse(while: .stopping, "Recording never finished after stopping")
+    }
+
+    /// Rebuilds the session if the state hasn't moved on in time, since the file output can
+    /// get into a state where it ignores both start and stop until it's recreated
+    private func expectResponse(while state: RecordingState, _ problem: String, after delay: TimeInterval = responseTimeout) {
+        responseCheck?.cancel()
+        let check = DispatchWorkItem { [weak self] in
+            guard let self, self.recorder.state == state else { return }
+            self.restartSession(after: problem)
+        }
+        responseCheck = check
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: check)
+    }
+
+    private func restartSession(after problem: String) {
+        logDiagnostics("STUCK: \(problem). Restarting the capture session")
+        recorder.state = .restarting
+        // Callbacks from the old output are ignored once it's replaced
+        videoOutput.stopRecording()
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            let session = self.captureSession
+            session.stopRunning()
+            session.beginConfiguration()
+            session.inputs.forEach(session.removeInput)
+            session.outputs.forEach(session.removeOutput)
+            session.commitConfiguration()
+            self.videoOutput = AVCaptureMovieFileOutput()
+            let error = self.configureSession()
+            if error == nil {
+                session.startRunning()
+            }
+            let isRunning = session.isRunning
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if let error {
+                    self.showError(error)
+                } else if !isRunning {
+                    self.showError(.failedToStart)
+                } else {
+                    self.recorder.state = .idle
+                    self.logDiagnostics("Capture session restarted")
+                    self.showToast("The camera got stuck, so it was restarted. Try again.")
+                }
+            }
+        }
     }
 
     func fileOutput(_ output: AVCaptureFileOutput,
                     didStartRecordingTo fileURL: URL,
                     from connections: [AVCaptureConnection]) {
         DispatchQueue.main.async { [weak self] in
-            guard let self, self.recorder.state == .starting else { return }
+            guard let self, output === self.videoOutput, self.recorder.state == .starting else { return }
+            let delay = self.tapTime.map { Date().timeIntervalSince($0) } ?? 0
+            self.logDiagnostics("Recording started after \(String(format: "%.2f", delay))s")
             self.recorder.state = .recording
             // maxRecordedDuration should stop it; this makes sure a missed stop can't leave it running
-            DispatchQueue.main.asyncAfter(deadline: .now() + Self.maxDuration + 0.5) { [weak self] in
-                guard let self, self.recorder.state == .recording, self.videoOutput.isRecording else { return }
-                AppLogger.log("Recording didn't stop at its limit; stopping it", level: .warning)
+            self.responseCheck?.cancel()
+            let backstop = DispatchWorkItem { [weak self] in
+                guard let self, self.recorder.state == .recording else { return }
+                self.logDiagnostics("Recording didn't stop at its limit")
                 self.stopRecording()
             }
+            self.responseCheck = backstop
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.maxDuration + 0.5, execute: backstop)
         }
     }
 
@@ -364,19 +439,62 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
                     from connections: [AVCaptureConnection],
                     error: Error?) {
         // Hitting maxRecordedDuration reports an error even though the file is complete
-        if let error = error as NSError?,
-           error.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool != true {
-            AppLogger.log("❌ Recording failed: \(error)", level: .error)
-            DispatchQueue.main.async { [weak self] in
-                self?.recorder.state = .idle
-                self?.showError(.runtime(error.localizedDescription))
-            }
-            return
-        }
+        let nsError = error as NSError?
+        let succeeded = nsError == nil || nsError?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool == true
         DispatchQueue.main.async { [weak self] in
-            self?.recorder.state = .finished
-            self?.delegate?.didFinishRecording(to: outputFileURL)
-            self?.dismiss(animated: true)
+            guard let self, output === self.videoOutput else { return }
+            self.responseCheck?.cancel()
+            guard succeeded else {
+                self.logDiagnostics("Recording failed: \(String(describing: nsError))")
+                self.recorder.state = .idle
+                self.showError(.runtime(nsError?.localizedDescription ?? "Unknown error"))
+                return
+            }
+            self.logDiagnostics("Recording finished")
+            self.recorder.state = .finished
+            self.delegate?.didFinishRecording(to: outputFileURL)
+            self.dismiss(animated: true)
+        }
+    }
+
+    // MARK: Diagnostics
+
+    /// Logged and kept in a file that Export Backup includes, so a recording that gets
+    /// stuck on the phone can be looked at afterwards
+    private func logDiagnostics(_ event: String) {
+        let audioSession = AVAudioSession.sharedInstance()
+        let videoConnection = videoOutput.connection(with: .video)
+        let audioConnection = videoOutput.connection(with: .audio)
+        let details = [
+            "state=\(recorder.state)",
+            "running=\(captureSession.isRunning)",
+            "interrupted=\(captureSession.isInterrupted)",
+            "outputRecording=\(videoOutput.isRecording)",
+            "video=\(videoConnection.map { "active:\($0.isActive) enabled:\($0.isEnabled)" } ?? "none")",
+            "audio=\(audioConnection.map { "active:\($0.isActive) enabled:\($0.isEnabled)" } ?? "none")",
+            "audioSession=\(audioSession.category.rawValue)/\(audioSession.mode.rawValue)",
+            "otherAudio=\(audioSession.isOtherAudioPlaying)",
+        ].joined(separator: " ")
+        AppLogger.log("🎥 \(event) | \(details)")
+        RecorderDiagnostics.append("\(Date().ISO8601Format()) \(event) | \(details)")
+    }
+}
+
+enum RecorderDiagnostics {
+    private static let queue = DispatchQueue(label: "com.comedichoney.1SecJournal.recorderDiagnostics")
+    private static let maxSize = 256 * 1024
+
+    static func append(_ line: String) {
+        queue.async {
+            guard let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: kAppGroup)?
+                .appending(path: "Recorder Diagnostics.log") else { return }
+            var text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+            text += line + "\n"
+            // Keeps the newest half once the file gets big
+            if text.utf8.count > maxSize {
+                text = String(text.suffix(text.count / 2))
+            }
+            try? text.write(to: url, atomically: true, encoding: .utf8)
         }
     }
 }
