@@ -13,6 +13,19 @@ protocol CustomCameraViewControllerDelegate: AnyObject {
     func didRequestClose()
 }
 
+enum RecordingState {
+    case idle
+    /// startRecording was called; the file output hasn't confirmed yet
+    case starting
+    case recording
+    case finished
+}
+
+/// Shared with the SwiftUI overlay so the record button shows what the camera is actually doing
+@Observable final class RecorderModel {
+    var state: RecordingState = .idle
+}
+
 enum CameraError: Error {
     case permissionDenied
     case cameraUnavailable
@@ -20,6 +33,7 @@ enum CameraError: Error {
     case failedToStart
     case timedOut
     case interrupted
+    case notReady
     case runtime(String)
 
     var message: String {
@@ -30,6 +44,7 @@ enum CameraError: Error {
         case .failedToStart: return "Couldn't start the camera."
         case .timedOut: return "The camera is taking too long to start."
         case .interrupted: return "The camera was interrupted."
+        case .notReady: return "The camera isn't ready yet. Try again."
         case .runtime(let description): return "Camera error: \(description)"
         }
     }
@@ -40,8 +55,10 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     var videoOutput = AVCaptureMovieFileOutput()
     weak var delegate: CustomCameraViewControllerDelegate?
     var previewLayer: AVCaptureVideoPreviewLayer!
-    var maxDuration: TimeInterval = 1
     var url: URL?
+    let recorder = RecorderModel()
+    /// The length of every recording
+    static let maxDuration: TimeInterval = 1
 
     let previewContainer = UIView()
 
@@ -62,6 +79,18 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         observeSessionNotifications()
         startWatchdog()
         checkAuthorizationAndStart()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // Recording finished or the screen closed: release the camera and put the
+        // audio session back, since capture leaves it set up for recording
+        sessionQueue.async { [captureSession] in
+            if captureSession.isRunning {
+                captureSession.stopRunning()
+            }
+            AudioSession.configureForPlayback()
+        }
     }
 
     private func setupSpinner() {
@@ -172,7 +201,7 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
             return .outputUnavailable
         }
         captureSession.addOutput(videoOutput)
-        videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(1, preferredTimescale: 600)
+        videoOutput.maxRecordedDuration = CMTimeMakeWithSeconds(Self.maxDuration, preferredTimescale: 600)
         videoOutput.minFreeDiskSpaceLimit = 1024 * 1024
         return nil
     }
@@ -268,7 +297,7 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
         view.layer.addSublayer(previewLayer)
 
 
-        let overlayView = CameraRecorderOverlayView { [weak self] in
+        let overlayView = CameraRecorderOverlayView(recorder: recorder) { [weak self] in
             self?.handleRecordButtonTap()
         }
         let hostingController = UIHostingController(rootView: overlayView)
@@ -285,23 +314,27 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     }
 
     @objc func handleRecordButtonTap() {
-        AppLogger.log("Inputs: \(captureSession.inputs)", level: .verbose)
-        AppLogger.log("Outputs: \(captureSession.outputs)", level: .verbose)
-        if let connection = videoOutput.connection(with: .video) {
-            AppLogger.log("✅ Video connection exists. Active: \(connection.isActive), Enabled: \(connection.isEnabled)", level: .verbose)
-        } else {
-            AppLogger.log("❌ No video connection found")
-        }
-        guard let connection = videoOutput.connection(with: .video), connection.isActive else {
-            AppLogger.log("Video connection is not active")
-            return
-        }
-        guard !videoOutput.isRecording else {
+        switch recorder.state {
+        case .idle:
+            startRecording()
+        case .recording:
+            // Stops early; the clip is still saved
             stopRecording()
+        case .starting, .finished:
+            break
+        }
+    }
+
+    private func startRecording() {
+        guard let connection = videoOutput.connection(with: .video), connection.isActive else {
+            AppLogger.log("Video connection is not active", level: .warning)
+            showToast(CameraError.notReady.message)
             return
         }
+        hideToast()
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("output.mov")
         try? FileManager.default.removeItem(at: tempURL)
+        recorder.state = .starting
         videoOutput.startRecording(to: tempURL, recordingDelegate: self)
         url = tempURL
     }
@@ -309,6 +342,21 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
     // The file isn't finished until fileOutput(_:didFinishRecordingTo:) is called
     private func stopRecording() {
         videoOutput.stopRecording()
+    }
+
+    func fileOutput(_ output: AVCaptureFileOutput,
+                    didStartRecordingTo fileURL: URL,
+                    from connections: [AVCaptureConnection]) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.recorder.state == .starting else { return }
+            self.recorder.state = .recording
+            // maxRecordedDuration should stop it; this makes sure a missed stop can't leave it running
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.maxDuration + 0.5) { [weak self] in
+                guard let self, self.recorder.state == .recording, self.videoOutput.isRecording else { return }
+                AppLogger.log("Recording didn't stop at its limit; stopping it", level: .warning)
+                self.stopRecording()
+            }
+        }
     }
 
     func fileOutput(_ output: AVCaptureFileOutput,
@@ -320,11 +368,13 @@ class CameraRecorderViewController: UIViewController, AVCaptureFileOutputRecordi
            error.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool != true {
             AppLogger.log("❌ Recording failed: \(error)", level: .error)
             DispatchQueue.main.async { [weak self] in
+                self?.recorder.state = .idle
                 self?.showError(.runtime(error.localizedDescription))
             }
             return
         }
         DispatchQueue.main.async { [weak self] in
+            self?.recorder.state = .finished
             self?.delegate?.didFinishRecording(to: outputFileURL)
             self?.dismiss(animated: true)
         }
